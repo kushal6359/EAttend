@@ -57,7 +57,7 @@
     padding: 24px 16px 80px;
   }
 
-  /* Header structure with Drawer Trigger */
+  /* Header structure */
   header {
     display: flex;
     align-items: center;
@@ -65,57 +65,23 @@
     gap: 16px;
     margin-bottom: 24px;
   }
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
   .menu-btn {
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: 12px;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--text);
-    transition: all 0.2s;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text); transition: all 0.2s;
   }
-  .menu-btn:hover {
-    background: var(--glass-strong);
-    border-color: var(--accent);
-  }
-  .menu-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-  }
-  .eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 600;
-  }
-  h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    margin-top: 2px;
-  }
+  .menu-btn:hover { background: var(--glass-strong); border-color: var(--accent); }
+  .menu-btn svg { width: 20px; height: 20px; fill: currentColor; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin-top: 2px; }
   .date-pill {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 13.5px;
-    color: var(--text-dim);
-    background: var(--glass);
-    border: 1px solid var(--border);
-    padding: 8px 14px;
-    border-radius: 100px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; color: var(--text-dim);
+    background: var(--glass); border: 1px solid var(--border); padding: 8px 14px;
+    border-radius: 100px; backdrop-filter: blur(16px);
   }
 
   .glass {
@@ -129,244 +95,91 @@
 
   /* Current Active Subject Panel */
   .subject-status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    margin-bottom: 16px;
-    gap: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; margin-bottom: 16px; gap: 12px;
   }
-  .current-subject-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-  }
+  .current-subject-info { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .subject-tag {
     background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    flex-shrink: 0;
+    padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0;
   }
   .active-subject-name {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .rename-action-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 12.5px;
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+    font-size: 12.5px; font-weight: 500; padding: 6px 12px; border-radius: 100px;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
   }
-  .rename-action-btn:hover {
-    color: var(--text);
-    background: var(--glass);
-    border-color: var(--accent);
-  }
+  .rename-action-btn:hover { color: var(--text); background: var(--glass); border-color: var(--accent); }
 
   /* Side Drawer Styles */
   .drawer-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 8, 24, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+    position: fixed; inset: 0; background: rgba(10, 8, 24, 0.6);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
   }
-  .drawer-backdrop.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .drawer-backdrop.show { opacity: 1; pointer-events: auto; }
   .drawer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 310px;
-    max-width: 85%;
-    background: rgba(21, 16, 46, 0.94);
-    border-right: 1px solid var(--border);
-    z-index: 101;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex;
-    flex-direction: column;
-    box-shadow: 12px 0 40px rgba(0,0,0,0.4);
+    position: fixed; top: 0; left: 0; bottom: 0; width: 340px; max-width: 90%;
+    background: rgba(21, 16, 46, 0.94); border-right: 1px solid var(--border);
+    z-index: 101; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; flex-direction: column; box-shadow: 12px 0 40px rgba(0,0,0,0.4);
   }
-  .drawer-backdrop.show .drawer {
-    transform: translateX(0);
+  .drawer-backdrop.show .drawer { transform: translateX(0); }
+  .drawer-header { padding: 24px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .drawer-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
+  .drawer-close { background: transparent; border: none; color: var(--text-dim); font-size: 24px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+  .drawer-close:hover { background: var(--glass); color: var(--text); }
+  
+  /* Drawer Tabs */
+  .drawer-tabs { display: flex; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 0 10px; margin-bottom: 10px; }
+  .drawer-tab {
+    flex: 1; padding: 12px; text-align: center; font-size: 13px; font-weight: 600;
+    color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
   }
-  .drawer-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .drawer-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .drawer-close {
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 24px;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
-  .drawer-close:hover {
-    background: var(--glass);
-    color: var(--text);
-  }
-  .drawer-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 12px;
-  }
-  .subject-list-header {
-    font-size: 11px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin: 8px 8px 12px;
-    font-weight: 600;
-  }
-  .drawer-subject-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 6px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s ease;
-  }
-  .drawer-subject-item:hover {
-    background: var(--glass);
-  }
-  .drawer-subject-item.active {
-    background: var(--glass-strong);
-    border-color: var(--accent);
-  }
-  .subj-item-info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-    flex: 1;
-  }
-  .subj-item-name {
-    font-weight: 600;
-    font-size: 14.5px;
-    color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .subj-item-count {
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-  .subj-actions {
-    display: flex;
-    gap: 4px;
-    opacity: 0.8;
-  }
-  .drawer-subject-item:hover .subj-actions {
-    opacity: 1;
-  }
-  .subj-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-  }
-  .subj-btn:hover {
-    background: var(--glass-strong);
-    color: var(--text);
-  }
-  .subj-btn.delete:hover {
-    background: var(--absent-dim);
-    color: var(--absent);
-  }
-  .drawer-footer {
-    padding: 16px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-  .btn-new-subject {
-    width: 100%;
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: white;
-    font-weight: 600;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 14px;
-    cursor: pointer;
-    border: none;
-    transition: transform 0.15s, box-shadow 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
-  }
-  .btn-new-subject:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-  }
+  .drawer-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  .drawer-content { flex: 1; overflow-y: auto; padding: 10px 12px; display: none; }
+  .drawer-content.active { display: block; }
+  
+  .subject-list-header { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin: 8px 8px 12px; font-weight: 600; }
+  .drawer-subject-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; margin-bottom: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.15s ease; }
+  .drawer-subject-item:hover { background: var(--glass); }
+  .drawer-subject-item.active { background: var(--glass-strong); border-color: var(--accent); }
+  .subj-item-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+  .subj-item-name { font-weight: 600; font-size: 14.5px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .subj-item-count { font-size: 11px; color: var(--text-dim); }
+  .subj-actions { display: flex; gap: 4px; opacity: 0.8; }
+  .drawer-subject-item:hover .subj-actions { opacity: 1; }
+  .subj-btn { width: 30px; height: 30px; border-radius: 8px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .subj-btn:hover { background: var(--glass-strong); color: var(--text); }
+  .subj-btn.delete:hover { background: var(--absent-dim); color: var(--absent); }
+  .drawer-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .btn-new-subject { width: 100%; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; font-weight: 600; padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer; border: none; transition: transform 0.15s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3); }
+  .btn-new-subject:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
+
+  /* Drawer History Content Styles */
+  .history-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; padding: 0 8px; }
+  .tab-btn { padding: 6px 12px; border-radius: 100px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s ease; }
+  .tab-btn.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
+  .history-empty { color: var(--text-dim); font-size: 13px; text-align: center; padding: 24px 8px; }
+  .history-summary { display: flex; gap: 16px; margin: 0 8px 14px; flex-wrap: wrap; }
+  .history-list { display: flex; flex-direction: column; gap: 6px; margin: 0 8px 14px; }
+  .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); font-size: 14px; }
+  .status-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; letter-spacing: 0.02em; }
+  .status-tag.present { background: var(--present-dim); color: var(--present); }
+  .status-tag.absent { background: var(--absent-dim); color: var(--absent); }
 
   /* Circular Ring & Summary Card */
-  .summary {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 22px;
-    margin-bottom: 20px;
-  }
+  .summary { display: flex; align-items: center; gap: 20px; padding: 20px 22px; margin-bottom: 20px; }
   .ring-holder { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
   .ring-holder svg { transform: rotate(-90deg); }
   .ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 8; }
   .ring-fg { fill: none; stroke: var(--present); stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
-  .ring-label {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
-  }
+  .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; }
   .summary-text { flex: 1; min-width: 0; }
   .summary-text .class-name-label { font-weight: 700; font-size: 15px; font-family: 'Space Grotesk', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .summary-text .count-row { display: flex; gap: 18px; margin-top: 6px; flex-wrap: wrap; }
@@ -375,330 +188,91 @@
   .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
 
   /* Add student Panel */
-  .add-panel {
-    padding: 16px;
-    margin-bottom: 20px;
-  }
+  .add-panel { padding: 16px; margin-bottom: 20px; }
   .add-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-  .add-tab {
-    padding: 7px 14px;
-    border-radius: 100px;
-    font-size: 12.5px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
+  .add-tab { padding: 7px 14px; border-radius: 100px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
   .add-tab.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
   .add-row { display: flex; gap: 10px; }
   .add-row.hidden, .bulk-add.hidden { display: none; }
-  
-  input[type="text"] {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
-  }
+  input[type="text"] { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, background 0.2s; }
   input[type="text"]::placeholder { color: rgba(245, 246, 251, 0.35); }
   input[type="text"]:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
-  
-  textarea {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 14.5px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    resize: vertical;
-    min-height: 110px;
-    line-height: 1.6;
-    transition: border-color 0.2s, background 0.2s;
-  }
+  textarea { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 12px; font-size: 14.5px; font-family: 'Inter', sans-serif; outline: none; resize: vertical; min-height: 110px; line-height: 1.6; transition: border-color 0.2s, background 0.2s; }
   textarea::placeholder { color: rgba(245, 246, 251, 0.35); }
   textarea:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
-  
   .bulk-hint { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
   .bulk-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; flex-wrap: wrap; }
   .preview-count { font-size: 12.5px; color: var(--text-dim); }
   .preview-count b { color: var(--accent); }
   
-  button {
-    font-family: 'Inter', sans-serif;
-    cursor: pointer;
-    border: none;
-    outline: none;
-  }
+  button { font-family: 'Inter', sans-serif; cursor: pointer; border: none; outline: none; }
   
-  .btn-add {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: white;
-    font-weight: 600;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 14px;
-    white-space: nowrap;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
+  .btn-add { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; font-weight: 600; padding: 12px 20px; border-radius: 12px; font-size: 14px; white-space: nowrap; box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25); transition: transform 0.15s, box-shadow 0.15s; }
   .btn-add:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35); }
   .btn-add:active { transform: translateY(0); }
   .btn-add:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
   /* Roster section */
-  .section-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 26px 4px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 26px 4px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .section-title .title-left { display: flex; align-items: center; gap: 8px; }
+  
+  /* Filter Buttons */
+  .roster-filters { display: flex; gap: 6px; }
+  .filter-btn { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 4px 10px; border-radius: 100px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: normal; text-transform: none; }
+  .filter-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .filter-btn.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
+
   .roster { display: flex; flex-direction: column; gap: 8px; }
-  .student-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 16px;
-    animation: rise 0.25s ease;
-  }
+  .student-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; animation: rise 0.25s ease; }
   @keyframes rise { from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
   
-  .student-name {
-    font-size: 15px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-  .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: linear-gradient(135deg, #a78bfa, #6d28d9);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px;
-    flex-shrink: 0;
-    color: white;
-  }
+  .student-name { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa, #6d28d9); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; flex-shrink: 0; color: white; }
   .student-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .toggle-group { display: flex; gap: 6px; flex-shrink: 0; }
   
-  .toggle-btn {
-    padding: 7px 14px;
-    border-radius: 100px;
-    font-size: 12.5px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    transition: all 0.15s ease;
-  }
+  .toggle-btn { padding: 7px 14px; border-radius: 100px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-dim); transition: all 0.15s ease; }
   .toggle-btn.present.active { background: var(--present); color: #04241a; border-color: var(--present); }
   .toggle-btn.absent.active { background: var(--absent); color: #2b0410; border-color: var(--absent); }
   .toggle-btn:not(.active):hover { background: rgba(255,255,255,0.08); color: var(--text); }
   
-  .remove-btn {
-    background: none; color: rgba(245, 246, 251, 0.3); font-size: 18px; line-height: 1;
-    padding: 4px 6px; border-radius: 8px; transition: color 0.15s, background 0.15s;
-  }
+  .remove-btn { background: none; color: rgba(245, 246, 251, 0.3); font-size: 18px; line-height: 1; padding: 4px 6px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
   .remove-btn:hover { color: var(--absent); background: rgba(251, 113, 133, 0.12); }
 
-  .empty-state {
-    padding: 44px 20px;
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  .empty-state-btn {
-    background: var(--glass-strong);
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 8px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .empty-state-btn:hover {
-    border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.2);
-  }
+  .empty-state { padding: 44px 20px; text-align: center; color: var(--text-dim); font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .empty-state-btn { background: var(--glass-strong); color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .empty-state-btn:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.2); }
 
   /* Lower actions */
-  .actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-  .btn-outline {
-    flex: 1;
-    min-width: 140px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 13.5px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: var(--glass);
-    color: var(--text);
-    backdrop-filter: blur(16px);
-    transition: background 0.15s ease, transform 0.15s ease;
-  }
-  .btn-outline:hover { background: var(--glass-strong); transform: translateY(-1px); }
+  .actions { display: flex; justify-content: center; margin-top: 24px; padding-bottom: 20px;}
   .btn-save {
-    background: linear-gradient(135deg, #34d399, #0d9488);
-    border: none;
-    color: #04241a;
+    background: linear-gradient(135deg, #34d399, #0d9488); border: none; color: #04241a;
+    width: 100%; max-width: 320px; padding: 14px 16px; border-radius: 100px; font-size: 14.5px;
+    font-weight: 700; box-shadow: 0 4px 16px rgba(52, 211, 153, 0.2); transition: all 0.15s ease;
   }
-  .btn-save:hover { background: linear-gradient(135deg, #38efac, #0fa599); }
-
-  /* History section */
-  .history-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-  .tab-btn {
-    padding: 8px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .tab-btn.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
-  
-  .history-panel { padding: 18px; }
-  .history-empty { color: var(--text-dim); font-size: 14px; text-align: center; padding: 24px 0; }
-  .history-summary { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
-  .history-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-  .history-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.03);
-    font-size: 14px;
-  }
-  .status-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; letter-spacing: 0.02em; }
-  .status-tag.present { background: var(--present-dim); color: var(--present); }
-  .status-tag.absent { background: var(--absent-dim); color: var(--absent); }
+  .btn-save:hover:not(:disabled) { background: linear-gradient(135deg, #38efac, #0fa599); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3); }
+  .btn-save:disabled { opacity: 0.6; cursor: wait; }
 
   /* Toast alerts */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: rgba(20, 18, 40, 0.95);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(16px);
-    color: var(--text);
-    padding: 12px 20px;
-    border-radius: 100px;
-    font-size: 13.5px;
-    font-weight: 500;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    z-index: 1000;
-    max-width: 90vw;
-    text-align: center;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(20, 18, 40, 0.95); border: 1px solid var(--border); backdrop-filter: blur(16px); color: var(--text); padding: 12px 20px; border-radius: 100px; font-size: 13.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000; max-width: 90vw; text-align: center; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* Custom Glassmorphic Modals (Replaces native prompt/confirm) */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(8, 6, 20, 0.7);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    padding: 16px;
-  }
+  /* Custom Glassmorphic Modals */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(8, 6, 20, 0.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
   .modal-backdrop.show { display: flex; }
-  .modal {
-    width: 100%;
-    max-width: 400px;
-    padding: 24px;
-    border-radius: 20px;
-    animation: zoomIn 0.2s ease-out;
-  }
-  @keyframes zoomIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .modal h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 19px;
-    margin-bottom: 8px;
-    font-weight: 700;
-  }
-  .modal p {
-    font-size: 14px;
-    color: var(--text-dim);
-    line-height: 1.5;
-    margin-bottom: 16px;
-  }
-  .modal-input {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-  }
-  .modal-btn {
-    padding: 10px 18px;
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .modal-btn-cancel {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-  }
-  .modal-btn-cancel:hover {
-    color: var(--text);
-    background: var(--glass);
-  }
-  .modal-btn-confirm {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: white;
-  }
-  .modal-btn-confirm:hover {
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-  }
-  .modal-btn-danger {
-    background: linear-gradient(135deg, #fb7185, #e11d48);
-    color: white;
-  }
-  .modal-btn-danger:hover {
-    box-shadow: 0 4px 12px rgba(251, 113, 133, 0.3);
-  }
+  .modal { width: 100%; max-width: 400px; padding: 24px; border-radius: 20px; animation: zoomIn 0.2s ease-out; }
+  @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { font-family: 'Space Grotesk', sans-serif; font-size: 19px; margin-bottom: 8px; font-weight: 700; }
+  .modal p { font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-bottom: 16px; }
+  .modal-input { width: 100%; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .modal-btn { padding: 10px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .modal-btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .modal-btn-cancel:hover { color: var(--text); background: var(--glass); }
+  .modal-btn-confirm { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; }
+  .modal-btn-confirm:hover { box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+  .modal-btn-danger { background: linear-gradient(135deg, #fb7185, #e11d48); color: white; }
+  .modal-btn-danger:hover { box-shadow: 0 4px 12px rgba(251, 113, 133, 0.3); }
 
   @media (max-width: 480px) {
     h1 { font-size: 24px; }
@@ -720,22 +294,36 @@
 <div class="blob blob2"></div>
 <div class="blob blob3"></div>
 
-<!-- Side Drawer -->
+<!-- Side Drawer (Subjects & History) -->
 <div class="drawer-backdrop" id="drawerBackdrop">
   <div class="drawer">
     <div class="drawer-header">
-      <div class="drawer-title">Attendance App</div>
+      <div class="drawer-title">Dashboard</div>
       <button class="drawer-close" id="drawerClose">&times;</button>
     </div>
     
-    <div class="drawer-content">
+    <div class="drawer-tabs">
+      <div class="drawer-tab active" id="tabDrawSubj">Subjects</div>
+      <div class="drawer-tab" id="tabDrawHist">History</div>
+    </div>
+    
+    <!-- Drawer: Subject View -->
+    <div class="drawer-content active" id="drawerSubjectContent">
       <div class="subject-list-header">All Subjects</div>
       <div id="drawerSubjectList">
         <!-- Subject items rendered here -->
       </div>
     </div>
+
+    <!-- Drawer: History View -->
+    <div class="drawer-content" id="drawerHistoryContent">
+      <div class="subject-list-header" id="historyDrawerTitle">Attendance History</div>
+      <div class="history-tabs" id="historyTabs"></div>
+      <div class="history-panel" id="historyPanel" style="padding:0; margin-top:8px;"></div>
+    </div>
     
-    <div class="drawer-footer">
+    <!-- Drawer Footer only shown for Subjects -->
+    <div class="drawer-footer" id="drawerFooter">
       <button class="btn-new-subject" id="drawerNewSubjBtn">
         <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         Add New Subject
@@ -747,7 +335,7 @@
 <div class="wrap">
   <header>
     <div class="header-left">
-      <button class="menu-btn" id="menuBtn" title="Open Subject List">
+      <button class="menu-btn" id="menuBtn" title="Open Dashboard">
         <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
       </button>
       <div>
@@ -796,15 +384,13 @@
       <button class="add-tab" id="tabBulk">Add Multiple</button>
     </div>
 
-    <!-- Single add row -->
     <div class="add-row" id="singleAdd">
       <input type="text" id="nameInput" placeholder="Add student name…" maxlength="60">
       <button class="btn-add" id="addBtn">+ Add</button>
     </div>
 
-    <!-- Bulk add panel -->
     <div class="bulk-add hidden" id="bulkAdd">
-      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Alice Smith&#10;John Doe, Clara Oswald"></textarea>
+      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Chota Bheem&#10;Siddharth&#10;Shakthimaan"></textarea>
       <div class="bulk-footer">
         <div class="preview-count" id="bulkPreview">0 names detected</div>
         <button class="btn-add" id="bulkAddBtn" disabled>+ Add all</button>
@@ -813,33 +399,30 @@
     </div>
   </div>
 
-  <!-- Roster Title and Header Actions -->
+  <!-- Roster Section & Filters -->
   <div class="section-title">
-    <span>Roster</span>
-    <span id="rosterHint" style="text-transform:none; letter-spacing:normal;"></span>
+    <div class="title-left">
+      <span>Roster</span>
+      <span id="rosterHint" style="text-transform:none; letter-spacing:normal; font-size:12px;"></span>
+    </div>
+    <div class="roster-filters" id="rosterFilters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="present">Present</button>
+      <button class="filter-btn" data-filter="absent">Absent</button>
+    </div>
   </div>
+  
   <div class="glass" style="padding:6px;">
     <div class="roster" id="roster"></div>
   </div>
 
-  <!-- Action Row -->
+  <!-- Single Focused Save Button -->
   <div class="actions">
-    <button class="btn-outline" id="copyPresentBtn">📋 Copy Present</button>
-    <button class="btn-outline" id="copyAbsentBtn">📋 Copy Absent</button>
-    <button class="btn-outline btn-save" id="saveBtn">✓ Save Attendance</button>
+    <button class="btn-save" id="saveBtn">✓ Save Attendance</button>
   </div>
-
-  <!-- History Panels -->
-  <div class="section-title" style="margin-top:36px;">
-    <span>Attendance History</span>
-  </div>
-  <div class="history-tabs" id="historyTabs"></div>
-  <div class="glass history-panel" id="historyPanel"></div>
 </div>
 
-<!-- ================== CUSTOM MODALS ================== -->
-
-<!-- Modal: Add/Rename Subject Input -->
+<!-- Custom Modals -->
 <div class="modal-backdrop" id="inputModal">
   <div class="glass modal">
     <h3 id="inputModalTitle">New Subject</h3>
@@ -852,7 +435,6 @@
   </div>
 </div>
 
-<!-- Modal: Confirm Delete Subject -->
 <div class="modal-backdrop" id="confirmModal">
   <div class="glass modal">
     <h3 style="color: var(--absent)">Delete Subject?</h3>
@@ -868,14 +450,15 @@
 
 <!-- ================== APP LOGIC ================== -->
 <script>
-    // ---------- Cloud Storage Configuration ----------
-  const SHEETDB_API_URL = "https://sheetdb.io/api/v1/cyxhzs0bvgxhi"; // Replace with your real API ID
+  // ---------- Cloud Storage Configuration ----------
+  const SHEETDB_API_URL = "https://sheetdb.io/api/v1/cyxhzs0bvgxhi"; 
 
-  // Fallback defaults in memory while data loads
+  // In-memory states
   let subjects = []; 
   let studentsBySubject = {}; 
   let attendanceBySubject = {}; 
   let activeSubjId = '';
+  let rosterFilter = 'all'; // all, present, absent
 
   function uid(){ return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
@@ -925,11 +508,41 @@
     return attendanceBySubject[activeSubjId];
   }
 
-  // ---------- GLOBAL CLOUD FETCH (Replaces LocalStorage Loading) ----------
+  // ---------- Auto Clean Up Older Data ----------
+  async function cleanupOldData() {
+    try {
+      const d = new Date();
+      d.setDate(d.getDate() - 3); // Calculate date 3 days ago
+      const cutoff = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      
+      const res = await fetch(`${SHEETDB_API_URL}?sheet=attendance`);
+      const data = await res.json();
+      
+      const datesToDelete = new Set();
+      data.forEach(row => {
+        if (row.date && row.date < cutoff) {
+          datesToDelete.add(row.date);
+        }
+      });
+      
+      for (let date of datesToDelete) {
+        // Valid API call, no /keys/
+        await fetch(`${SHEETDB_API_URL}/date/${date}?sheet=attendance`, { method: 'DELETE' });
+      }
+      if (datesToDelete.size > 0) console.log(`Cleaned up ${datesToDelete.size} old dates.`);
+    } catch (err) {
+      console.error('Cleanup routine failed:', err);
+    }
+  }
+
+  // ---------- GLOBAL CLOUD FETCH ----------
   async function initializeAppFromCloud() {
     showToast("Connecting to cloud database...");
+    
+    // Trigger background cleanup (non-blocking)
+    cleanupOldData();
+
     try {
-      // 1. Fetch Roster Sheet to build Subjects and Student lists dynamically
       const response = await fetch(`${SHEETDB_API_URL}?sheet=roster`);
       const rosterData = await response.json();
 
@@ -938,31 +551,22 @@
 
       if (rosterData && rosterData.length > 0) {
         rosterData.forEach(row => {
-          // If the row contains subject details, parse them
-          if (row.subject_id && row.student_name) {
-            // Deduce subjects implicitly from what's on the sheet
+          if (row.subject_id) {
             if (!subjectMap.has(row.subject_id)) {
-              // Extract subject name from ID or use a placeholder until renamed
-              // Note: For a strict setup, you could create a 3rd tab for subject titles, 
-              // but parsing them out of the roster rows keeps your API requests low.
               subjectMap.set(row.subject_id, row.subject_name || "Classroom Subject");
             }
-            
             if (!studentsBySubject[row.subject_id]) {
               studentsBySubject[row.subject_id] = [];
             }
-            
-            if (row.student_name !== "__INIT_EMPTY__") {
+            if (row.student_name && row.student_name !== "__INIT_EMPTY__") {
               studentsBySubject[row.subject_id].push({ name: row.student_name });
             }
           }
         });
-
         subjects = Array.from(subjectMap.entries()).map(([id, name]) => ({ id, name }));
         activeSubjId = subjects[0]?.id || '';
       }
 
-      // 2. Fetch today's current attendance records from the attendance sheet
       const attResponse = await fetch(`${SHEETDB_API_URL}/search?date=${today}&sheet=attendance`);
       const attData = await attResponse.json();
 
@@ -983,7 +587,6 @@
     }
   }
 
-
   // ---------- DOM Element Selectors ----------
   const rosterEl = document.getElementById('roster');
   const nameInput = document.getElementById('nameInput');
@@ -1003,11 +606,18 @@
   const menuBtn = document.getElementById('menuBtn');
   const drawerBackdrop = document.getElementById('drawerBackdrop');
   const drawerClose = document.getElementById('drawerClose');
+  
+  const tabDrawSubj = document.getElementById('tabDrawSubj');
+  const tabDrawHist = document.getElementById('tabDrawHist');
+  const drawerSubjectContent = document.getElementById('drawerSubjectContent');
+  const drawerHistoryContent = document.getElementById('drawerHistoryContent');
+  const drawerFooter = document.getElementById('drawerFooter');
+  
   const drawerSubjectList = document.getElementById('drawerSubjectList');
   const drawerNewSubjBtn = document.getElementById('drawerNewSubjBtn');
   const headerRenameBtn = document.getElementById('headerRenameBtn');
 
-  // Custom Modal Elements
+  // Modal Elements
   const inputModal = document.getElementById('inputModal');
   const inputModalTitle = document.getElementById('inputModalTitle');
   const inputModalDesc = document.getElementById('inputModalDesc');
@@ -1022,7 +632,6 @@
 
   todayLabel.textContent = formatDateLabel(today);
 
-  // ---------- UI Alerts ----------
   function showToast(msg){
     toast.textContent = msg;
     toast.classList.add('show');
@@ -1030,7 +639,7 @@
     showToast._t = setTimeout(()=> toast.classList.remove('show'), 2400);
   }
 
-  // ---------- Custom Promise-based Modals ----------
+  // ---------- Custom Modals ----------
   let currentModalResolve = null;
 
   function showPromptModal(title, description, placeholder, initialValue = "") {
@@ -1041,7 +650,6 @@
       inputModalField.value = initialValue;
       inputModal.classList.add('show');
       inputModalField.focus();
-      
       currentModalResolve = resolve;
     });
   }
@@ -1049,20 +657,12 @@
   inputModalSubmit.addEventListener('click', () => {
     const value = inputModalField.value.trim();
     inputModal.classList.remove('show');
-    if (currentModalResolve) {
-      currentModalResolve(value || null);
-      currentModalResolve = null;
-    }
+    if (currentModalResolve) { currentModalResolve(value || null); currentModalResolve = null; }
   });
-
   inputModalCancel.addEventListener('click', () => {
     inputModal.classList.remove('show');
-    if (currentModalResolve) {
-      currentModalResolve(null);
-      currentModalResolve = null;
-    }
+    if (currentModalResolve) { currentModalResolve(null); currentModalResolve = null; }
   });
-
   inputModalField.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') inputModalSubmit.click();
     if (e.key === 'Escape') inputModalCancel.click();
@@ -1078,82 +678,79 @@
 
   confirmModalSubmit.addEventListener('click', () => {
     confirmModal.classList.remove('show');
-    if (currentModalResolve) {
-      currentModalResolve(true);
-      currentModalResolve = null;
-    }
+    if (currentModalResolve) { currentModalResolve(true); currentModalResolve = null; }
   });
-
   confirmModalCancel.addEventListener('click', () => {
     confirmModal.classList.remove('show');
-    if (currentModalResolve) {
-      currentModalResolve(false);
-      currentModalResolve = null;
-    }
+    if (currentModalResolve) { currentModalResolve(false); currentModalResolve = null; }
   });
 
-  // ---------- Drawer Controls ----------
+  // ---------- Drawer Tab Controls ----------
+  tabDrawSubj.addEventListener('click', () => {
+    tabDrawSubj.classList.add('active'); tabDrawHist.classList.remove('active');
+    drawerSubjectContent.classList.add('active'); drawerHistoryContent.classList.remove('active');
+    drawerFooter.style.display = 'block';
+  });
+  tabDrawHist.addEventListener('click', () => {
+    tabDrawHist.classList.add('active'); tabDrawSubj.classList.remove('active');
+    drawerHistoryContent.classList.add('active'); drawerSubjectContent.classList.remove('active');
+    drawerFooter.style.display = 'none';
+    renderHistory();
+  });
+
   function openDrawer() {
     renderDrawerSubjects();
     drawerBackdrop.classList.add('show');
   }
-  function closeDrawer() {
-    drawerBackdrop.classList.remove('show');
-  }
+  function closeDrawer() { drawerBackdrop.classList.remove('show'); }
 
   menuBtn.addEventListener('click', openDrawer);
   drawerClose.addEventListener('click', closeDrawer);
-  drawerBackdrop.addEventListener('click', (e) => {
-    if (e.target === drawerBackdrop) closeDrawer();
+  drawerBackdrop.addEventListener('click', (e) => { if (e.target === drawerBackdrop) closeDrawer(); });
+
+  // ---------- Roster Filter Handlers ----------
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      rosterFilter = e.target.dataset.filter;
+      renderRoster();
+    });
   });
 
-  // ---------- Render Drawer Subject List ----------
+  // ---------- Cloud Drawer/Subjects ----------
   function renderDrawerSubjects(){
     drawerSubjectList.innerHTML = '';
-    
     if (subjects.length === 0) {
-      drawerSubjectList.innerHTML = `
-        <div class="empty-state" style="padding: 24px 8px;">
-          No subjects created yet.
-          <button class="empty-state-btn" onclick="triggerAddNewSubject()">Create One</button>
-        </div>
-      `;
+      drawerSubjectList.innerHTML = `<div class="empty-state" style="padding: 24px 8px;">No subjects created yet.<button class="empty-state-btn" onclick="triggerAddNewSubject()">Create One</button></div>`;
       return;
     }
 
     subjects.forEach(subj => {
       const studentCount = (studentsBySubject[subj.id] || []).length;
-      
       const item = document.createElement('div');
       item.className = 'drawer-subject-item' + (subj.id === activeSubjId ? ' active' : '');
       
-      // Select Subject on clicking the body
       item.addEventListener('click', (e) => {
-        if (e.target.closest('.subj-btn')) return; // Avoid triggering selection if clicking sub buttons
+        if (e.target.closest('.subj-btn')) return; 
         activeSubjId = subj.id;
-        persistAll();
         renderAll();
         closeDrawer();
       });
 
       const info = document.createElement('div');
       info.className = 'subj-item-info';
-      info.innerHTML = `
-        <span class="subj-item-name">${escapeHtml(subj.name)}</span>
-        <span class="subj-item-count">${studentCount} Student${studentCount === 1 ? '' : 's'}</span>
-      `;
+      info.innerHTML = `<span class="subj-item-name">${escapeHtml(subj.name)}</span><span class="subj-item-count">${studentCount} Student${studentCount === 1 ? '' : 's'}</span>`;
       
       const actions = document.createElement('div');
       actions.className = 'subj-actions';
       
-      // Rename button
       const renameBtn = document.createElement('button');
       renameBtn.className = 'subj-btn';
       renameBtn.title = "Rename Subject";
       renameBtn.innerHTML = `<svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>`;
       renameBtn.addEventListener('click', () => triggerRenameSubject(subj.id));
       
-      // Delete button
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'subj-btn delete';
       deleteBtn.title = "Delete Subject";
@@ -1162,59 +759,63 @@
 
       actions.appendChild(renameBtn);
       actions.appendChild(deleteBtn);
-      
       item.appendChild(info);
       item.appendChild(actions);
       drawerSubjectList.appendChild(item);
     });
   }
 
-  // ---------- Trigger Add Subject ----------
   async function triggerAddNewSubject() {
     const val = await showPromptModal("New Subject", "Type the name of the subject you want to track:", "e.g. Mathematics, Chemistry, Arts");
     if (!val) return;
     
+    showToast("Saving subject to cloud...");
     const id = uid();
-    subjects.push({ id, name: val });
-    studentsBySubject[id] = [];
-    attendanceBySubject[id] = {};
-    activeSubjId = id;
-    
-    persistAll();
-    renderAll();
-    renderDrawerSubjects();
-    showToast(`Created Subject: "${val}"`);
-  }
+    try {
+      await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [{ "subject_id": id, "subject_name": val, "student_name": "__INIT_EMPTY__" }] })
+      });
 
+      subjects.push({ id, name: val });
+      studentsBySubject[id] = [];
+      attendanceBySubject[id] = {};
+      activeSubjId = id;
+      
+      renderAll();
+      renderDrawerSubjects();
+      showToast(`Created Subject: "${val}"`);
+    } catch(e) { showToast("❌ Cloud failed to create subject."); }
+  }
   drawerNewSubjBtn.addEventListener('click', triggerAddNewSubject);
 
-  // ---------- Trigger Rename Subject ----------
   async function triggerRenameSubject(subjId) {
     const subject = subjects.find(s => s.id === subjId);
     if (!subject) return;
-
     const val = await showPromptModal("Rename Subject", `Provide a new name for "${subject.name}":`, "e.g. Adv. Mathematics", subject.name);
     if (!val || val === subject.name) return;
 
-    const oldName = subject.name;
-    subject.name = val;
-    
-    persistAll();
-    renderAll();
-    renderDrawerSubjects();
-    showToast(`Renamed "${oldName}" to "${val}"`);
-  }
+    showToast("Updating cloud data...");
+    try {
+      await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { "subject_name": val } })
+      });
 
-  // Bind Rename to Quick Header Action
+      const oldName = subject.name;
+      subject.name = val;
+      renderAll();
+      renderDrawerSubjects();
+      showToast(`Renamed "${oldName}" to "${val}"`);
+    } catch(e) { showToast("❌ Cloud update failed."); }
+  }
   headerRenameBtn.addEventListener('click', () => {
-    if (activeSubjId) {
-      triggerRenameSubject(activeSubjId);
-    } else {
-      showToast("Create a subject first!");
-    }
+    if (activeSubjId) triggerRenameSubject(activeSubjId);
+    else showToast("Create a subject first!");
   });
 
-  // ---------- Trigger Delete Subject ----------
   async function triggerDeleteSubject(subjId) {
     const subject = subjects.find(s => s.id === subjId);
     if (!subject) return;
@@ -1222,33 +823,31 @@
     const confirm = await showConfirmModal(`Delete the subject "${subject.name}"? This removes all students and attendance history forever.`);
     if (!confirm) return;
 
-    subjects = subjects.filter(s => s.id !== subjId);
-    delete studentsBySubject[subjId];
-    delete attendanceBySubject[subjId];
+    showToast("Deleting from cloud...");
+    try {
+      // Fix applied here: Removed invalid "/keys" path segment
+      await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
+      await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
 
-    if (activeSubjId === subjId) {
-      activeSubjId = subjects[0]?.id || '';
-    }
+      subjects = subjects.filter(s => s.id !== subjId);
+      delete studentsBySubject[subjId];
+      delete attendanceBySubject[subjId];
 
-    persistAll();
-    renderAll();
-    renderDrawerSubjects();
-    showToast(`Deleted "${subject.name}"`);
+      if (activeSubjId === subjId) activeSubjId = subjects[0]?.id || '';
+      renderAll();
+      renderDrawerSubjects();
+      showToast(`Deleted "${subject.name}"`);
+    } catch(e) { showToast("❌ Cloud deletion failed."); }
   }
 
-  // ---------- Attendance Roster rendering ----------
+  // ---------- Attendance Roster Rendering ----------
   function renderRoster(){
     const students = currentStudents();
     const att = currentAttendance();
     rosterEl.innerHTML = '';
     
     if (!activeSubjId) {
-      rosterEl.innerHTML = `
-        <div class="empty-state">
-          No subject active. 
-          <button class="empty-state-btn" id="emptyStateAddSubj">Create your first subject</button>
-        </div>
-      `;
+      rosterEl.innerHTML = `<div class="empty-state">No subject active. <button class="empty-state-btn" id="emptyStateAddSubj">Create your first subject</button></div>`;
       rosterHint.textContent = '';
       updateSummary();
       document.getElementById('emptyStateAddSubj')?.addEventListener('click', triggerAddNewSubject);
@@ -1256,20 +855,27 @@
     }
 
     if (students.length === 0){
-      rosterEl.innerHTML = `
-        <div class="empty-state">
-          <span>No students in this subject yet.</span>
-          <span style="font-size:12px; max-width:280px">Add student names above or import multiple at once to start today's roster roll call.</span>
-        </div>
-      `;
+      rosterEl.innerHTML = `<div class="empty-state"><span>No students in this subject yet.</span><span style="font-size:12px; max-width:280px">Add student names above or import multiple at once to start today's roster roll call.</span></div>`;
       rosterHint.textContent = '';
       updateSummary();
       return;
     }
     
-    rosterHint.textContent = students.length + ' student' + (students.length === 1 ? '' : 's');
+    // Filtering logic
+    const filteredStudents = students.filter(st => {
+      const status = att[today] ? (att[today][st.name] || null) : null;
+      if (rosterFilter === 'present' && status !== 'present') return false;
+      if (rosterFilter === 'absent' && status !== 'absent') return false;
+      return true;
+    });
 
-    students.forEach(st => {
+    if (filteredStudents.length === 0) {
+      rosterEl.innerHTML = `<div class="empty-state" style="padding: 24px 0;">No students match the "${rosterFilter}" filter.</div>`;
+    }
+
+    rosterHint.textContent = `(${filteredStudents.length}/${students.length})`;
+
+    filteredStudents.forEach(st => {
       const status = att[today] ? (att[today][st.name] || null) : null;
       const row = document.createElement('div');
       row.className = 'student-row';
@@ -1294,44 +900,32 @@
         const a = currentAttendance();
         
         if (!a[today]) a[today] = {};
-        if (a[today][name] === status) { 
-          delete a[today][name]; 
-        } else { 
-          a[today][name] = status; 
-        }
+        if (a[today][name] === status) { delete a[today][name]; }
+        else { a[today][name] = status; }
         
-        persistAll();
+        // This only modifies local state. 
+        // Save triggers actual cloud push.
         renderRoster();
       });
     });
 
-        rosterEl.querySelectorAll('[data-remove]').forEach(btn => {
+    rosterEl.querySelectorAll('[data-remove]').forEach(btn => {
       btn.addEventListener('click', async () => {
         const name = btn.dataset.remove;
-        showToast('Removing student...');
-
+        showToast('Removing student from cloud...');
         try {
-          // Delete row from roster tab
-          await fetch(`${SHEETDB_API_URL}/keys/student_name/${name}?subject_id=${activeSubjId}&sheet=roster`, {
-            method: 'DELETE'
-          });
-          // Delete any attendance records for them today
-          await fetch(`${SHEETDB_API_URL}/keys/student_name/${name}?subject_id=${activeSubjId}&date=${today}&sheet=attendance`, {
-            method: 'DELETE'
-          });
-
+          // Fix applied here: Removed invalid "/keys" and safely encoded the string
+          await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+          await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=attendance&subject_id=${activeSubjId}&date=${today}`, { method: 'DELETE' });
+          
           studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== name);
           const a = currentAttendance();
           if (a[today]) delete a[today][name];
-          
           renderRoster();
-          showToast('Removed.');
-        } catch (e) {
-          showToast('❌ Failed to delete from cloud.');
-        }
+          showToast('Removed successfully.');
+        } catch (e) { showToast('❌ Failed to delete from cloud.'); }
       });
     });
-
 
     updateSummary();
   }
@@ -1365,59 +959,35 @@
     summarySubjName.textContent = currentSubjObj ? currentSubjObj.name : '—';
   }
 
-  // ---------- Add: Single student ----------
-  function addStudent(name){
-    const students = currentStudents();
-    if (!name) return false;
-    if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) return false;
-    students.push({ name });
-    return true;
-  }
-
-    addBtn.addEventListener('click', async () => {
-    if (!activeSubjId) {
-      showToast('Please select or create a subject first!');
-      return;
-    }
+  // ---------- Add Student Functionality ----------
+  addBtn.addEventListener('click', async () => {
+    if (!activeSubjId) { showToast('Please select or create a subject first!'); return; }
     const name = nameInput.value.trim();
     if (!name) return;
     
     const students = currentStudents();
-    if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) {
-      showToast('That name is already on the roster');
-      return;
-    }
+    if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) { showToast('That name is already on the roster'); return; }
 
     showToast('Adding student to cloud...');
     const currentSubjObj = subjects.find(s => s.id === activeSubjId);
 
     try {
+      // Fix applied here: Removed invalid "/keys" path segment
+      await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
       await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          data: [{
-            "subject_id": activeSubjId,
-            "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject",
-            "student_name": name
-          }]
-        })
+        body: JSON.stringify({ data: [{ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }] })
       });
-      
       students.push({ name });
       nameInput.value = '';
       renderRoster();
       nameInput.focus();
       showToast('Student added successfully!');
-    } catch (e) {
-      showToast('❌ Failed to add student online.');
-    }
+    } catch (e) { showToast('❌ Failed to add student online.'); }
   });
-
-  
   nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
 
-  // ---------- Add: Bulk student import ----------
   const tabSingle = document.getElementById('tabSingle');
   const tabBulk = document.getElementById('tabBulk');
   const singleAdd = document.getElementById('singleAdd');
@@ -1430,39 +1000,26 @@
     tabSingle.classList.add('active'); tabBulk.classList.remove('active');
     singleAdd.classList.remove('hidden'); bulkAdd.classList.add('hidden');
   });
-  
   tabBulk.addEventListener('click', () => {
     tabBulk.classList.add('active'); tabSingle.classList.remove('active');
     bulkAdd.classList.remove('hidden'); singleAdd.classList.add('hidden');
     bulkInput.focus();
   });
 
-  function parseBulkNames(raw){
-    return raw
-      .split(/[\n,]+/)
-      .map(s => s.trim())
-      .filter(Boolean);
-  }
-  
+  function parseBulkNames(raw){ return raw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean); }
   function dedupeAgainstRoster(names){
     const existing = new Set(currentStudents().map(s => s.name.toLowerCase()));
-    const seen = new Set();
-    const fresh = [];
+    const seen = new Set(); const fresh = [];
     names.forEach(n => {
       const key = n.toLowerCase();
       if (existing.has(key) || seen.has(key)) return;
-      seen.add(key);
-      fresh.push(n);
+      seen.add(key); fresh.push(n);
     });
     return fresh;
   }
 
   bulkInput.addEventListener('input', () => {
-    if (!activeSubjId) {
-      bulkPreview.innerHTML = `Create/select a subject first.`;
-      bulkAddBtn.disabled = true;
-      return;
-    }
+    if (!activeSubjId) { bulkPreview.innerHTML = `Create/select a subject first.`; bulkAddBtn.disabled = true; return; }
     const names = parseBulkNames(bulkInput.value);
     const fresh = dedupeAgainstRoster(names);
     const dupes = names.length - fresh.length;
@@ -1470,202 +1027,158 @@
     bulkAddBtn.disabled = fresh.length === 0;
   });
 
-  bulkAddBtn.addEventListener('click', () => {
+  bulkAddBtn.addEventListener('click', async () => {
     if (!activeSubjId) return;
     const names = parseBulkNames(bulkInput.value);
     const fresh = dedupeAgainstRoster(names);
     if (fresh.length === 0) return;
     
-    const students = currentStudents();
-    fresh.forEach(name => students.push({ name }));
-    
-    persistAll();
-    bulkInput.value = '';
-    bulkPreview.textContent = '0 names detected';
-    bulkAddBtn.disabled = true;
-    renderRoster();
-    showToast(`Added ${fresh.length} student${fresh.length === 1 ? '' : 's'} to this subject`);
-  });
+    showToast("Bulk importing to cloud...");
+    const currentSubjObj = subjects.find(s => s.id === activeSubjId);
+    const rowsToSend = fresh.map(name => ({ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }));
 
-  // ---------- Clipboard Copy Mechanisms ----------
-  function copyList(status){
-    const students = currentStudents();
-    const att = currentAttendance();
-    const names = students.filter(s => att[today] && att[today][s.name] === status).map(s => s.name);
-    
-    if (names.length === 0){
-      showToast(`No ${status} students marked yet`);
-      return;
-    }
-    
-    // Custom robust fallback copy script to circumvent sandbox issues
-    const textarea = document.createElement("textarea");
-    textarea.value = names.join('\n');
-    textarea.style.position = "fixed"; 
-    document.body.appendChild(textarea);
-    textarea.select();
-    
     try {
-      document.execCommand('copy');
-      showToast(`Copied ${names.length} ${status} name${names.length === 1 ? '' : 's'} to clipboard`);
-    } catch (err) {
-      showToast('Could not copy automatically — clipboard access blocked');
-    }
-    document.body.removeChild(textarea);
-  }
-  
-  document.getElementById('copyPresentBtn').addEventListener('click', () => copyList('present'));
-  document.getElementById('copyAbsentBtn').addEventListener('click', () => copyList('absent'));
-
-// ---------- Save Action updated for Google Sheets ----------
-document.getElementById('saveBtn').addEventListener('click', async () => {
-  if (!activeSubjId) {
-    showToast('Select a subject first!');
-    return;
-  }
-
-  const students = currentStudents();
-  const att = currentAttendance()[today] || {};
-  const rowsToSend = [];
-
-  // Build the rows structure for SheetDB
-  students.forEach(student => {
-    const status = att[student.name];
-    if (status) { // Only log if they are explicitly marked present or absent
-      rowsToSend.push({
-        "subject_id": activeSubjId,
-        "date": today,
-        "student_name": student.name,
-        "status": status
+      // Fix applied here: Removed invalid "/keys" path segment
+      await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+      await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: rowsToSend })
       });
+      const students = currentStudents();
+      fresh.forEach(name => students.push({ name }));
+      bulkInput.value = '';
+      bulkPreview.textContent = '0 names detected';
+      bulkAddBtn.disabled = true;
+      renderRoster();
+      showToast(`Imported ${fresh.length} students to cloud!`);
+    } catch(e) { showToast("❌ Bulk import failed."); }
+  });
+
+  // ---------- SAVE ACTION (Double Entry Protection) ----------
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.addEventListener('click', async () => {
+    if (!activeSubjId) { showToast('Select a subject first!'); return; }
+
+    const students = currentStudents();
+    const att = currentAttendance()[today] || {};
+    const rowsToSend = [];
+
+    students.forEach(student => {
+      const status = att[student.name];
+      if (status) { 
+        rowsToSend.push({
+          "subject_id": activeSubjId,
+          "date": today,
+          "student_name": student.name,
+          "status": status
+        });
+      }
+    });
+
+    if (rowsToSend.length === 0) { showToast('No attendance marked to save yet!'); return; }
+
+    // Disable to prevent spam clicks and duplicates
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    showToast('Saving to cloud...');
+
+    try {
+      // Fix applied here: Removed invalid "/keys" path segment
+      await fetch(`${SHEETDB_API_URL}/subject_id/${activeSubjId}?sheet=attendance&date=${today}`, {
+        method: 'DELETE'
+      });
+
+      const response = await fetch(`${SHEETDB_API_URL}?sheet=attendance`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: rowsToSend })
+      });
+
+      if (response.ok) {
+        showToast('✓ Saved online to Google Sheets!');
+        if(tabDrawHist.classList.contains('active')) renderHistory();
+      } else {
+        throw new Error('Server error');
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('❌ Cloud save failed.');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '✓ Save Attendance';
     }
   });
 
-  if (rowsToSend.length === 0) {
-    showToast('No attendance marked to save yet!');
-    return;
-  }
-
-  showToast('Saving to cloud...');
-
-  try {
-    // 1. (Optional but clean) Delete any existing records for this subject/date combo so you don't get duplicates if you hit save twice
-    await fetch(`${SHEETDB_API_URL}/keys/subject_id/${activeSubjId}?date=${today}`, {
-      method: 'DELETE'
-    });
-
-    // 2. Send the new data package over to Google Sheets
-    const response = await fetch(SHEETDB_API_URL, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ data: rowsToSend })
-    });
-
-    if (response.ok) {
-      persistAll(); // Keep fallback localStorage sync intact
-      showToast('✓ Saved online to Google Sheets!');
-      renderHistory();
-    } else {
-      throw new Error('Server error');
-    }
-  } catch (error) {
-    console.error(error);
-    showToast('❌ Cloud save failed. Saved locally instead.');
-  }
-});
-
-  // ---------- Attendance History Renderer ----------
+  // ---------- Drawer History Renderer ----------
   const historyTabs = document.getElementById('historyTabs');
   const historyPanel = document.getElementById('historyPanel');
   let activeHistoryKey = null;
 
-  // ---------- Cloud Attendance History Renderer ----------
-async function renderHistory(){
-  const keys = prevDateKeys(3);
-  activeHistoryKey = activeHistoryKey && keys.includes(activeHistoryKey) ? activeHistoryKey : keys[0];
+  async function renderHistory(){
+    const keys = prevDateKeys(3); // Shows only past 3 days based on retention rule
+    activeHistoryKey = activeHistoryKey && keys.includes(activeHistoryKey) ? activeHistoryKey : keys[0];
 
-  historyTabs.innerHTML = '';
-  
-  if (!activeSubjId) {
-    historyPanel.innerHTML = `<div class="history-empty">Please select a subject to load history.</div>`;
-    return;
-  }
-
-  // Render tabs
-  keys.forEach(key => {
-    const btn = document.createElement('button');
-    btn.className = 'tab-btn' + (key === activeHistoryKey ? ' active' : '');
-    btn.textContent = formatDateLabel(key);
-    btn.addEventListener('click', () => { activeHistoryKey = key; renderHistory(); });
-    historyTabs.appendChild(btn);
-  });
-
-  historyPanel.innerHTML = `<div class="history-empty">Loading records from cloud...</div>`;
-
-  try {
-    // Query SheetDB for rows matching this subject and this history tab's date
-    const response = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&date=${activeHistoryKey}`);
-    const data = await response.json();
-
-    if (!data || data.length === 0){
-      historyPanel.innerHTML = `<div class="history-empty">No attendance history logged on ${formatDateLabel(activeHistoryKey)} for this subject.</div>`;
+    historyTabs.innerHTML = '';
+    
+    if (!activeSubjId) {
+      historyPanel.innerHTML = `<div class="history-empty">Please select a subject to load history.</div>`;
       return;
     }
 
-    const presentNames = data.filter(row => row.status === 'present').map(row => row.student_name);
-    const absentNames = data.filter(row => row.status === 'absent').map(row => row.student_name);
+    const currentSubj = subjects.find(s => s.id === activeSubjId);
+    document.getElementById('historyDrawerTitle').textContent = currentSubj ? `History - ${currentSubj.name}` : 'Attendance History';
 
-    historyPanel.innerHTML = `
-      <div class="history-summary">
-        <div class="count"><span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present</div>
-        <div class="count"><span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent</div>
-      </div>
-      <div class="history-list" id="histList"></div>
-      <div class="actions">
-        <button class="btn-outline" id="histCopyPresent">📋 Copy Present</button>
-        <button class="btn-outline" id="histCopyAbsent">📋 Copy Absent</button>
-      </div>
-    `;
-    
-    const listEl = document.getElementById('histList');
-    [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
-      const row = document.createElement('div');
-      row.className = 'history-item';
-      row.innerHTML = `<span>${escapeHtml(name)}</span><span class="status-tag ${status}">${status.toUpperCase()}</span>`;
-      listEl.appendChild(row);
+    keys.forEach(key => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (key === activeHistoryKey ? ' active' : '');
+      btn.textContent = formatDateLabel(key);
+      btn.addEventListener('click', () => { activeHistoryKey = key; renderHistory(); });
+      historyTabs.appendChild(btn);
     });
 
-    // Rebind clipboard listeners
-    document.getElementById('histCopyPresent').addEventListener('click', () => {
-      if (presentNames.length === 0){ showToast('No present students that day'); return; }
-      const txt = document.createElement("textarea"); txt.value = presentNames.join('\n'); txt.style.position = "fixed"; document.body.appendChild(txt); txt.select(); document.execCommand('copy'); document.body.removeChild(txt); showToast(`Copied ${presentNames.length} name(s)`);
-    });
-    
-    document.getElementById('histCopyAbsent').addEventListener('click', () => {
-      if (absentNames.length === 0){ showToast('No absent students that day'); return; }
-      const txt = document.createElement("textarea"); txt.value = absentNames.join('\n'); txt.style.position = "fixed"; document.body.appendChild(txt); txt.select(); document.execCommand('copy'); document.body.removeChild(txt); showToast(`Copied ${absentNames.length} name(s)`);
-    });
+    historyPanel.innerHTML = `<div class="history-empty">Loading records...</div>`;
 
-  } catch (error) {
-    historyPanel.innerHTML = `<div class="history-empty" style="color:var(--absent)">Failed to download history from cloud.</div>`;
+    try {
+      const response = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&date=${activeHistoryKey}&sheet=attendance`);
+      const data = await response.json();
+
+      if (!data || data.length === 0 || data.error){
+        historyPanel.innerHTML = `<div class="history-empty">No attendance logged on ${formatDateLabel(activeHistoryKey)}.</div>`;
+        return;
+      }
+
+      const presentNames = data.filter(row => row.status === 'present').map(row => row.student_name);
+      const absentNames = data.filter(row => row.status === 'absent').map(row => row.student_name);
+
+      historyPanel.innerHTML = `
+        <div class="history-summary">
+          <div class="count"><span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present</div>
+          <div class="count"><span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent</div>
+        </div>
+        <div class="history-list" id="histList"></div>
+      `;
+      
+      const listEl = document.getElementById('histList');
+      [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        row.innerHTML = `<span>${escapeHtml(name)}</span><span class="status-tag ${status}">${status.toUpperCase()}</span>`;
+        listEl.appendChild(row);
+      });
+
+    } catch (error) {
+      historyPanel.innerHTML = `<div class="history-empty" style="color:var(--absent)">Failed to download history.</div>`;
+    }
   }
-}
 
-
-  // ---------- Init Trigger ----------
   function renderAll(){
     renderRoster();
     activeHistoryKey = null;
-    renderHistory();
+    if(tabDrawHist.classList.contains('active')) renderHistory();
   }
   
-  // Kickstart the application by querying the Google Sheet instead of localStorage
   initializeAppFromCloud();
-
 </script>
 </body>
 </html>
-
