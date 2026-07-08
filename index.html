@@ -523,12 +523,23 @@
   </div>
 </div>
 
+<!-- Diagnostics / Error Modal -->
+<div class="modal-backdrop" id="alertModal">
+  <div class="glass modal" style="max-width: 440px;">
+    <h3 id="alertModalTitle" style="color: var(--absent)">Cloud Connection Failed</h3>
+    <p id="alertModalDesc" style="white-space: pre-wrap; font-size: 13.5px; line-height: 1.6; margin-bottom: 20px;"></p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-confirm" id="alertModalClose">Dismiss</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- ================== APP LOGIC ================== -->
 <script>
   // ---------- Cloud Storage Configuration ----------
-  const SHEETDB_API_URL = "https://sheetdb.io/api/v1/cyxhzs0bvgxhi"; 
+  const SHEETDB_API_URL = "https://sheetdb.io/api/v1/1zmkdfeyas1ei"; 
 
   // In-memory states
   let subjects = []; 
@@ -616,6 +627,19 @@
     document.body.removeChild(textarea);
   }
 
+  // ---------- Dynamic Alert Modal Utility ----------
+  const alertModal = document.getElementById('alertModal');
+  const alertModalTitle = document.getElementById('alertModalTitle');
+  const alertModalDesc = document.getElementById('alertModalDesc');
+  const alertModalClose = document.getElementById('alertModalClose');
+
+  function showAlertModal(title, descriptionHtml) {
+    alertModalTitle.textContent = title;
+    alertModalDesc.innerHTML = descriptionHtml;
+    alertModal.classList.add('show');
+  }
+  alertModalClose.addEventListener('click', () => { alertModal.classList.remove('show'); });
+
   // ---------- Auto Clean Up Older Data (Limit to 3 Days) ----------
   async function cleanupOldData() {
     try {
@@ -655,6 +679,10 @@
 
     try {
       const response = await fetch(`${SHEETDB_API_URL}?sheet=roster`);
+      if (!response.ok) {
+        handleHttpError(response, "Initial Cloud Fetch");
+        return;
+      }
       const rosterData = await response.json();
 
       const subjectMap = new Map();
@@ -683,20 +711,21 @@
         lastLoadedSubjectId = activeSubjId;
         const selectedHour = document.getElementById('hourSelect').value;
         const attResponse = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
-        const attData = await attResponse.json();
-
-        attendanceBySubject = {};
-        if (attData && attData.length > 0 && !attData.error) {
-          attData.forEach(row => {
-            if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
-            if (!attendanceBySubject[row.subject_id][today]) attendanceBySubject[row.subject_id][today] = {};
-            
-            const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
-            const rowHour = row.hour || "Hour 1";
-            if (rowDateKey === today && rowHour === selectedHour) {
-              attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
-            }
-          });
+        if (attResponse.ok) {
+          const attData = await attResponse.json();
+          attendanceBySubject = {};
+          if (attData && attData.length > 0 && !attData.error) {
+            attData.forEach(row => {
+              if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
+              if (!attendanceBySubject[row.subject_id][today]) attendanceBySubject[row.subject_id][today] = {};
+              
+              const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+              const rowHour = row.hour || "Hour 1";
+              if (rowDateKey === today && rowHour === selectedHour) {
+                attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
+              }
+            });
+          }
         }
       }
 
@@ -704,7 +733,40 @@
       renderAll();
     } catch (error) {
       console.error(error);
-      showToast("❌ Connection error. Check your API settings.");
+      showToast("❌ Network error. Check internet connection.");
+    }
+  }
+
+  // ---------- Error Diagnostics Handler ----------
+  async function handleHttpError(response, context) {
+    const status = response.status;
+    let details = "An unexpected error occurred during database transactions.";
+    
+    try {
+      const errJson = await response.json();
+      if (errJson && errJson.error) details = errJson.error;
+    } catch (e) {
+      try {
+        const text = await response.text();
+        if (text) details = text;
+      } catch(err) {}
+    }
+
+    if (status === 429) {
+      showAlertModal(
+        "API Limit Reached (429)",
+        `Your <b>SheetDB API Key</b> has reached its execution limit (500 requests/month on the free tier).<br><br><b>How to fix this:</b><br>1. Log in to your <a href="https://sheetdb.io" target="_blank" style="color: var(--accent); text-decoration: underline;">SheetDB Dashboard</a> and check your usage status.<br>2. Wait for your monthly quota reset.<br>3. Create a new SheetDB API key using another email and update the API URL in this file.`
+      );
+    } else if (status === 403) {
+      showAlertModal(
+        "Access Forbidden (403)",
+        `SheetDB rejected the authentication request.<br><br><b>Possible causes:</b><br>• The API URL is incorrect.<br>• Your SheetDB API token has expired or was revoked.<br>• Google Sheet permissions have been changed.`
+      );
+    } else {
+      showAlertModal(
+        `Cloud Error (${status})`,
+        `<b>Context:</b> ${context}<br><b>Details:</b> ${details}<br><br>Please verify your sheet headers contain the required columns: <code>subject_id</code>, <code>date</code>, <code>hour</code>, <code>student_name</code>, <code>status</code>.`
+      );
     }
   }
 
@@ -722,6 +784,10 @@
     try {
       // Pull all records for active subject to evaluate matching attributes safely
       const attResponse = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      if (!attResponse.ok) {
+        handleHttpError(attResponse, "Load Period Attendance");
+        return;
+      }
       const attData = await attResponse.json();
 
       if (!attendanceBySubject[activeSubjId]) attendanceBySubject[activeSubjId] = {};
@@ -968,11 +1034,15 @@
     showToast("Saving subject to cloud...");
     const id = uid();
     try {
-      await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+      const res = await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: [{ "subject_id": id, "subject_name": val, "student_name": "__INIT_EMPTY__" }] })
       });
+      if (!res.ok) {
+        handleHttpError(res, "Add New Subject");
+        return;
+      }
 
       subjects.push({ id, name: val });
       studentsBySubject[id] = [];
@@ -994,11 +1064,15 @@
 
     showToast("Updating cloud data...");
     try {
-      await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, {
+      const res = await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: { "subject_name": val } })
       });
+      if (!res.ok) {
+        handleHttpError(res, "Rename Subject");
+        return;
+      }
 
       const oldName = subject.name;
       subject.name = val;
@@ -1021,8 +1095,11 @@
 
     showToast("Deleting from cloud...");
     try {
-      await fetch(`${SHEETDB_API_URL}?sheet=roster&subject_id=${subjId}`, { method: 'DELETE' });
-      await fetch(`${SHEETDB_API_URL}?sheet=attendance&subject_id=${subjId}`, { method: 'DELETE' });
+      const res1 = await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
+      const res2 = await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
+
+      if (!res1.ok) { handleHttpError(res1, "Delete Subject (Roster)"); return; }
+      if (!res2.ok) { handleHttpError(res2, "Delete Subject (Attendance)"); return; }
 
       subjects = subjects.filter(s => s.id !== subjId);
       delete studentsBySubject[subjId];
@@ -1107,8 +1184,10 @@
         const name = btn.dataset.remove;
         showToast('Removing student from cloud...');
         try {
-          await fetch(`${SHEETDB_API_URL}?sheet=roster&student_name=${encodeURIComponent(name)}&subject_id=${activeSubjId}`, { method: 'DELETE' });
-          await fetch(`${SHEETDB_API_URL}?sheet=attendance&student_name=${encodeURIComponent(name)}&subject_id=${activeSubjId}&date=${today}`, { method: 'DELETE' });
+          const res1 = await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=roster`, { method: 'DELETE' });
+          const res2 = await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=attendance`, { method: 'DELETE' });
+          
+          if (!res1.ok) { handleHttpError(res1, "Remove Student (Roster)"); return; }
           
           studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== name);
           const a = currentAttendance();
@@ -1122,6 +1201,7 @@
     updateSummary();
   }
 
+  // ---------- Metric Calculations ----------
   function updateSummary(){
     const students = currentStudents();
     const att = currentAttendance();
@@ -1165,11 +1245,15 @@
 
     try {
       await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
-      await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+      const res = await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: [{ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }] })
       });
+      if (!res.ok) {
+        handleHttpError(res, "Add Student");
+        return;
+      }
       students.push({ name });
       nameInput.value = '';
       renderRoster();
@@ -1230,11 +1314,15 @@
 
     try {
       await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
-      await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+      const res = await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: rowsToSend })
       });
+      if (!res.ok) {
+        handleHttpError(res, "Bulk Import Students");
+        return;
+      }
       const students = currentStudents();
       fresh.forEach(name => students.push({ name }));
       bulkInput.value = '';
@@ -1274,12 +1362,17 @@
     saveBtn.textContent = 'Saving...';
     showToast('Saving to cloud...');
 
+    // Resilient delete block: Wrap preceding selective-delete separately so a
+    // 400 rejection on compound parameters doesn't break the actual POST save.
     try {
-      // Clear records strictly matching the specific active Subject + Day + Hour selectively
-      await fetch(`${SHEETDB_API_URL}?sheet=attendance&subject_id=${activeSubjId}&date=${today}&hour=${encodeURIComponent(selectedHour)}`, {
+      await fetch(`${SHEETDB_API_URL}/subject_id/${activeSubjId}?sheet=attendance&date=${today}&hour=${encodeURIComponent(selectedHour)}`, {
         method: 'DELETE'
       });
+    } catch (err) {
+      console.warn("Attempted record cleanup prior to save bypassed:", err);
+    }
 
+    try {
       const response = await fetch(`${SHEETDB_API_URL}?sheet=attendance`, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -1288,13 +1381,13 @@
 
       if (response.ok) {
         showToast(`✓ Attendance Saved for ${selectedHour}!`);
-        if(tabDrawHist.classList.contains('active')) renderHistory();
+        if (tabDrawHist.classList.contains('active')) renderHistory();
       } else {
-        throw new Error('Server error');
+        await handleHttpError(response, "Save Attendance Block");
       }
     } catch (error) {
       console.error(error);
-      showToast('❌ Cloud save failed.');
+      showToast('❌ Network transaction error.');
     } finally {
       saveBtn.disabled = false;
       saveBtn.textContent = '✓ Save Attendance';
@@ -1376,6 +1469,10 @@
 
     try {
       const response = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      if (!response.ok) {
+        handleHttpError(response, "Render History Block");
+        return;
+      }
       const data = await response.json();
 
       if (!data || data.length === 0 || data.error){
@@ -1465,3 +1562,4 @@
 </script>
 </body>
 </html>
+
