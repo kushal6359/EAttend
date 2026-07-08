@@ -78,10 +78,50 @@
   .menu-btn svg { width: 20px; height: 20px; fill: currentColor; }
   .eyebrow { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; }
   h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin-top: 2px; }
+  
+  .header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
   .date-pill {
     font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; color: var(--text-dim);
     background: var(--glass); border: 1px solid var(--border); padding: 8px 14px;
     border-radius: 100px; backdrop-filter: blur(16px);
+  }
+  
+  /* Select Hour Styling */
+  .hour-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    padding: 2px 8px 2px 14px;
+    border-radius: 100px;
+  }
+  .hour-selector-container label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .hour-select {
+    background: transparent;
+    color: var(--text);
+    border: none;
+    outline: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    padding: 6px;
+  }
+  .hour-select option {
+    background: #0f0a24;
+    color: var(--text);
   }
 
   .glass {
@@ -246,7 +286,7 @@
   .empty-state-btn:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.2); }
 
   /* Lower actions */
-  .actions { display: flex; justify-content: center; margin-top: 24px; padding-bottom: 20px;}
+  .actions { display: flex; justify-content: center; gap: 12px; margin-top: 24px; padding-bottom: 20px; flex-wrap: wrap;}
   .btn-save {
     background: linear-gradient(135deg, #34d399, #0d9488); border: none; color: #04241a;
     width: 100%; max-width: 320px; padding: 14px 16px; border-radius: 100px; font-size: 14.5px;
@@ -254,6 +294,15 @@
   }
   .btn-save:hover:not(:disabled) { background: linear-gradient(135deg, #38efac, #0fa599); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3); }
   .btn-save:disabled { opacity: 0.6; cursor: wait; }
+
+  /* WhatsApp CTA button style */
+  .btn-whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E); border: none; color: white;
+    width: 100%; max-width: 320px; padding: 14px 16px; border-radius: 100px; font-size: 14.5px;
+    font-weight: 700; box-shadow: 0 4px 16px rgba(37, 211, 102, 0.2); transition: all 0.15s ease;
+  }
+  .btn-whatsapp:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35); }
+  .btn-whatsapp svg { width: 18px; height: 18px; fill: currentColor; }
 
   /* Toast alerts */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(20, 18, 40, 0.95); border: 1px solid var(--border); backdrop-filter: blur(16px); color: var(--text); padding: 12px 20px; border-radius: 100px; font-size: 13.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000; max-width: 90vw; text-align: center; }
@@ -280,6 +329,8 @@
     h1 { font-size: 24px; }
     .summary { flex-wrap: wrap; }
     .date-pill { font-size: 12px; padding: 6px 12px; }
+    .header-meta { align-items: flex-start; margin-top: 4px; }
+    header { flex-direction: column; align-items: flex-start; gap: 10px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -345,7 +396,23 @@
         <h1>Roll Call</h1>
       </div>
     </div>
-    <div class="date-pill" id="todayLabel">—</div>
+    <div class="header-meta">
+      <div class="date-pill" id="todayLabel">—</div>
+      <!-- Period selector mapping directly to targeted hourly saves -->
+      <div class="hour-selector-container">
+        <label for="hourSelect">Period:</label>
+        <select id="hourSelect" class="hour-select">
+          <option value="Hour 1" selected>Hour 1</option>
+          <option value="Hour 2">Hour 2</option>
+          <option value="Hour 3">Hour 3</option>
+          <option value="Hour 4">Hour 4</option>
+          <option value="Hour 5">Hour 5</option>
+          <option value="Hour 6">Hour 6</option>
+          <option value="Hour 7">Hour 7</option>
+          <option value="Hour 8">Hour 8</option>
+        </select>
+      </div>
+    </div>
   </header>
 
   <!-- Current Active Subject Status bar -->
@@ -392,7 +459,7 @@
     </div>
 
     <div class="bulk-add hidden" id="bulkAdd">
-      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Alice Smith&#10;John Doe, Clara Oswald"></textarea>
+      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Chota Bheem&#10;Siddhart, Shakthimaan"></textarea>
       <div class="bulk-footer">
         <div class="preview-count" id="bulkPreview">0 names detected</div>
         <button class="btn-add" id="bulkAddBtn" disabled>+ Add all</button>
@@ -420,9 +487,15 @@
     <div class="roster" id="roster"></div>
   </div>
 
-  <!-- Single Focused Save Button -->
+  <!-- Actions: Save and Share -->
   <div class="actions">
     <button class="btn-save" id="saveBtn">✓ Save Attendance</button>
+    
+    <!-- WhatsApp Action Button -->
+    <button class="btn-whatsapp" id="whatsappBtn" title="Share absentees list to WhatsApp">
+      <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+      Share Absentees to WhatsApp
+    </button>
   </div>
 </div>
 
@@ -463,17 +536,37 @@
   let attendanceBySubject = {}; 
   let activeSubjId = '';
   let rosterFilter = 'all'; // all, present, absent
+  let lastLoadedSubjectId = ''; // Protect subject drafts during Period switches
 
   function uid(){ return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
+  // Resilient date conversion (handles Google Sheets serial date conversions e.g. "46211")
+  function parseSheetDate(key) {
+    if (!key) return new Date();
+    key = String(key).trim();
+    if (/^\d+$/.test(key)) {
+      const serial = parseInt(key, 10);
+      // 25569 standard offset days between 1899-12-30 and 1970-01-01
+      return new Date((serial - 25569) * 86400 * 1000);
+    }
+    const parts = key.split('-').map(Number);
+    if (parts.length === 3 && !parts.some(isNaN)) {
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    const parsed = new Date(key);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+
+  function normalizeDateToKey(date) {
+    return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+  }
+
   function todayKey(){
-    const d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    return normalizeDateToKey(new Date());
   }
 
   function formatDateLabel(key){
-    const [y,m,d] = key.split('-').map(Number);
-    const dt = new Date(y, m-1, d);
+    const dt = parseSheetDate(key);
     return dt.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
   }
 
@@ -483,7 +576,7 @@
     for(let i=1; i<=n; i++){
       const dd = new Date(d);
       dd.setDate(d.getDate() - i);
-      keys.push(dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-' + String(dd.getDate()).padStart(2,'0'));
+      keys.push(normalizeDateToKey(dd));
     }
     return keys;
   }
@@ -523,27 +616,31 @@
     document.body.removeChild(textarea);
   }
 
-  // ---------- Auto Clean Up Older Data ----------
+  // ---------- Auto Clean Up Older Data (Limit to 3 Days) ----------
   async function cleanupOldData() {
     try {
       const d = new Date();
       d.setDate(d.getDate() - 3); // Calculate date 3 days ago
-      const cutoff = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      const cutoff = normalizeDateToKey(d);
       
       const res = await fetch(`${SHEETDB_API_URL}?sheet=attendance`);
       const data = await res.json();
       
-      const datesToDelete = new Set();
-      data.forEach(row => {
-        if (row.date && row.date < cutoff) {
-          datesToDelete.add(row.date);
+      if (data && data.length > 0 && !data.error) {
+        const datesToDelete = new Set();
+        data.forEach(row => {
+          const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+          if (rowDateKey < cutoff) {
+            datesToDelete.add(rowDateKey);
+          }
+        });
+        
+        for (let date of datesToDelete) {
+          // Precise key cleanup segment
+          await fetch(`${SHEETDB_API_URL}/date/${date}?sheet=attendance`, { method: 'DELETE' });
         }
-      });
-      
-      for (let date of datesToDelete) {
-        await fetch(`${SHEETDB_API_URL}/date/${date}?sheet=attendance`, { method: 'DELETE' });
+        if (datesToDelete.size > 0) console.log(`Cleaned up ${datesToDelete.size} old dates.`);
       }
-      if (datesToDelete.size > 0) console.log(`Cleaned up ${datesToDelete.size} old dates.`);
     } catch (err) {
       console.error('Cleanup routine failed:', err);
     }
@@ -581,16 +678,26 @@
         activeSubjId = subjects[0]?.id || '';
       }
 
-      const attResponse = await fetch(`${SHEETDB_API_URL}/search?date=${today}&sheet=attendance`);
-      const attData = await attResponse.json();
+      // Fetch active attendance records resiliently with in-memory parsing
+      if (activeSubjId) {
+        lastLoadedSubjectId = activeSubjId;
+        const selectedHour = document.getElementById('hourSelect').value;
+        const attResponse = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
+        const attData = await attResponse.json();
 
-      attendanceBySubject = {};
-      if (attData && attData.length > 0) {
-        attData.forEach(row => {
-          if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
-          if (!attendanceBySubject[row.subject_id][today]) attendanceBySubject[row.subject_id][today] = {};
-          attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
-        });
+        attendanceBySubject = {};
+        if (attData && attData.length > 0 && !attData.error) {
+          attData.forEach(row => {
+            if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
+            if (!attendanceBySubject[row.subject_id][today]) attendanceBySubject[row.subject_id][today] = {};
+            
+            const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+            const rowHour = row.hour || "Hour 1";
+            if (rowDateKey === today && rowHour === selectedHour) {
+              attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
+            }
+          });
+        }
       }
 
       showToast("✓ Cloud Sync Complete");
@@ -600,6 +707,57 @@
       showToast("❌ Connection error. Check your API settings.");
     }
   }
+
+  // ---------- Fetch Specific Hour Attendance with Draft Carry-over ----------
+  async function loadHourAttendance() {
+    if (!activeSubjId) return;
+    showToast("Syncing Period Details...");
+    const selectedHour = document.getElementById('hourSelect').value;
+    
+    // Store current visual sheet state as fallback draft ONLY if switching hours within the same subject
+    const isSameSubject = (lastLoadedSubjectId === activeSubjId);
+    const fallbackDraft = (isSameSubject && currentAttendance()[today]) ? { ...currentAttendance()[today] } : {};
+    lastLoadedSubjectId = activeSubjId;
+
+    try {
+      // Pull all records for active subject to evaluate matching attributes safely
+      const attResponse = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      const attData = await attResponse.json();
+
+      if (!attendanceBySubject[activeSubjId]) attendanceBySubject[activeSubjId] = {};
+      
+      let hasRecordsForNewHour = false;
+      const newHourData = {};
+
+      if (attData && attData.length > 0 && !attData.error) {
+        attData.forEach(row => {
+          const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+          const rowHour = row.hour || "Hour 1";
+          if (rowDateKey === today && rowHour === selectedHour) {
+            newHourData[row.student_name] = row.status;
+            hasRecordsForNewHour = true;
+          }
+        });
+      }
+
+      if (hasRecordsForNewHour) {
+        // Hour was marked previously, load the authentic stored database copy
+        attendanceBySubject[activeSubjId][today] = newHourData;
+        showToast(`Loaded stored ${selectedHour} markings`);
+      } else {
+        // Carry over previous hour state as template. No auto-push occurs.
+        attendanceBySubject[activeSubjId][today] = fallbackDraft;
+        showToast(`Draft carried over to ${selectedHour}. Edit & save manually!`);
+      }
+      
+      renderRoster();
+    } catch (e) {
+      console.error(e);
+      showToast("❌ Failed to fetch Period records.");
+    }
+  }
+
+  document.getElementById('hourSelect').addEventListener('change', loadHourAttendance);
 
   // ---------- DOM Element Selectors ----------
   const rosterEl = document.getElementById('roster');
@@ -712,6 +870,7 @@
     renderHistory();
   });
 
+  // Open & Close methods
   function openDrawer() {
     renderDrawerSubjects();
     drawerBackdrop.classList.add('show');
@@ -729,7 +888,7 @@
       e.target.classList.add('active');
       rosterFilter = e.target.dataset.filter;
       
-      // Reveal copy button if filtering specific lists
+      // Copy shortcut visibility
       const copyBtn = document.getElementById('copyFilteredBtn');
       copyBtn.style.display = rosterFilter === 'all' ? 'none' : 'inline-block';
       copyBtn.textContent = `📋 Copy ${rosterFilter === 'present' ? 'Present' : 'Absent'}`;
@@ -771,7 +930,7 @@
       item.addEventListener('click', (e) => {
         if (e.target.closest('.subj-btn')) return; 
         activeSubjId = subj.id;
-        renderAll();
+        loadHourAttendance(); // Switch active subject and load hour roster seamlessly
         closeDrawer();
       });
 
@@ -862,8 +1021,8 @@
 
     showToast("Deleting from cloud...");
     try {
-      await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
-      await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
+      await fetch(`${SHEETDB_API_URL}?sheet=roster&subject_id=${subjId}`, { method: 'DELETE' });
+      await fetch(`${SHEETDB_API_URL}?sheet=attendance&subject_id=${subjId}`, { method: 'DELETE' });
 
       subjects = subjects.filter(s => s.id !== subjId);
       delete studentsBySubject[subjId];
@@ -948,8 +1107,8 @@
         const name = btn.dataset.remove;
         showToast('Removing student from cloud...');
         try {
-          await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
-          await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=attendance&subject_id=${activeSubjId}&date=${today}`, { method: 'DELETE' });
+          await fetch(`${SHEETDB_API_URL}?sheet=roster&student_name=${encodeURIComponent(name)}&subject_id=${activeSubjId}`, { method: 'DELETE' });
+          await fetch(`${SHEETDB_API_URL}?sheet=attendance&student_name=${encodeURIComponent(name)}&subject_id=${activeSubjId}&date=${today}`, { method: 'DELETE' });
           
           studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== name);
           const a = currentAttendance();
@@ -1086,7 +1245,7 @@
     } catch(e) { showToast("❌ Bulk import failed."); }
   });
 
-  // ---------- SAVE ACTION (Double Entry Protection) ----------
+  // ---------- SAVE ACTION (Target Hour Selective Overwrite) ----------
   const saveBtn = document.getElementById('saveBtn');
   saveBtn.addEventListener('click', async () => {
     if (!activeSubjId) { showToast('Select a subject first!'); return; }
@@ -1094,6 +1253,7 @@
     const students = currentStudents();
     const att = currentAttendance()[today] || {};
     const rowsToSend = [];
+    const selectedHour = document.getElementById('hourSelect').value;
 
     students.forEach(student => {
       const status = att[student.name];
@@ -1101,6 +1261,7 @@
         rowsToSend.push({
           "subject_id": activeSubjId,
           "date": today,
+          "hour": selectedHour, // Track distinct hour index
           "student_name": student.name,
           "status": status
         });
@@ -1109,13 +1270,13 @@
 
     if (rowsToSend.length === 0) { showToast('No attendance marked to save yet!'); return; }
 
-    // Disable to prevent spam clicks and duplicates
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
     showToast('Saving to cloud...');
 
     try {
-      await fetch(`${SHEETDB_API_URL}/subject_id/${activeSubjId}?sheet=attendance&date=${today}`, {
+      // Clear records strictly matching the specific active Subject + Day + Hour selectively
+      await fetch(`${SHEETDB_API_URL}?sheet=attendance&subject_id=${activeSubjId}&date=${today}&hour=${encodeURIComponent(selectedHour)}`, {
         method: 'DELETE'
       });
 
@@ -1126,7 +1287,7 @@
       });
 
       if (response.ok) {
-        showToast('✓ Saved online to Google Sheets!');
+        showToast(`✓ Attendance Saved for ${selectedHour}!`);
         if(tabDrawHist.classList.contains('active')) renderHistory();
       } else {
         throw new Error('Server error');
@@ -1140,13 +1301,57 @@
     }
   });
 
-  // ---------- Drawer History Renderer ----------
+  // ---------- WHATSAPP AUTOMATION GENERATOR ----------
+  const whatsappBtn = document.getElementById('whatsappBtn');
+  whatsappBtn.addEventListener('click', () => {
+    if (!activeSubjId) {
+      showToast('Please select a subject first!');
+      return;
+    }
+    const currentSubj = subjects.find(s => s.id === activeSubjId);
+    const selectedHour = document.getElementById('hourSelect').value;
+    const students = currentStudents();
+    const att = currentAttendance()[today] || {};
+    
+    // Find absolute absentees
+    const absentees = students.filter(st => att[st.name] === 'absent').map(st => st.name);
+    
+    if (students.length === 0) {
+      showToast('Roster is empty.');
+      return;
+    }
+
+    const totalAbsenteesCount = absentees.length;
+    const formattedDate = formatDateLabel(today);
+
+    // Dynamic formatting for WhatsApp dispatch
+    let messageText = `*🔴 ABSENTEES LIST 🔴*\n\n`;
+    messageText += `*Subject:* ${currentSubj ? currentSubj.name : "N/A"}\n`;
+    messageText += `*Period:* ${selectedHour}\n`;
+    messageText += `*Date:* ${formattedDate}\n\n`;
+    messageText += `*Total Absentees:* ${totalAbsenteesCount}\n\n`;
+    messageText += `*Absentees Names:*\n`;
+
+    if (totalAbsenteesCount === 0) {
+      messageText += `🎉 _All students are present today!_`;
+    } else {
+      absentees.forEach((name, index) => {
+        messageText += `${index + 1}. ${name}\n`;
+      });
+    }
+
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`;
+    window.open(whatsappUrl, '_blank');
+    showToast('Redirecting to WhatsApp...');
+  });
+
+  // ---------- Drawer History Renderer (Includes dynamic Period indicators) ----------
   const historyTabs = document.getElementById('historyTabs');
   const historyPanel = document.getElementById('historyPanel');
   let activeHistoryKey = null;
 
   async function renderHistory(){
-    const keys = prevDateKeys(3); // Shows only past 3 days based on retention rule
+    const keys = prevDateKeys(3); 
     activeHistoryKey = activeHistoryKey && keys.includes(activeHistoryKey) ? activeHistoryKey : keys[0];
 
     historyTabs.innerHTML = '';
@@ -1170,7 +1375,7 @@
     historyPanel.innerHTML = `<div class="history-empty">Loading records...</div>`;
 
     try {
-      const response = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&date=${activeHistoryKey}&sheet=attendance`);
+      const response = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
       const data = await response.json();
 
       if (!data || data.length === 0 || data.error){
@@ -1178,42 +1383,74 @@
         return;
       }
 
-      const presentNames = data.filter(row => row.status === 'present').map(row => row.student_name);
-      const absentNames = data.filter(row => row.status === 'absent').map(row => row.student_name);
-
-      historyPanel.innerHTML = `
-        <div class="history-summary">
-          <div class="count"><span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present</div>
-          <div class="count"><span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent</div>
-        </div>
-        <div style="display: flex; gap: 8px; margin: 0 8px 14px;">
-          <button class="filter-btn copy-btn" id="histCopyPresent">📋 Copy Present</button>
-          <button class="filter-btn copy-btn" id="histCopyAbsent">📋 Copy Absent</button>
-        </div>
-        <div class="history-list" id="histList"></div>
-      `;
-      
-      const listEl = document.getElementById('histList');
-      [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
-        const row = document.createElement('div');
-        row.className = 'history-item';
-        row.innerHTML = `<span>${escapeHtml(name)}</span><span class="status-tag ${status}">${status.toUpperCase()}</span>`;
-        listEl.appendChild(row);
+      // Group dynamic hour keys
+      const groupedByHour = {};
+      data.forEach(row => {
+        const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+        if (rowDateKey === activeHistoryKey) {
+          const hr = row.hour || "Hour 1";
+          if (!groupedByHour[hr]) groupedByHour[hr] = [];
+          groupedByHour[hr].push(row);
+        }
       });
 
-      // Bind copy buttons in history
-      document.getElementById('histCopyPresent').addEventListener('click', () => {
-        if (!presentNames.length) return showToast('No present names on this day');
-        copyToClipboard(presentNames.join('\n'));
-        showToast(`Copied ${presentNames.length} names`);
-      });
-      document.getElementById('histCopyAbsent').addEventListener('click', () => {
-        if (!absentNames.length) return showToast('No absent names on this day');
-        copyToClipboard(absentNames.join('\n'));
-        showToast(`Copied ${absentNames.length} names`);
+      historyPanel.innerHTML = '';
+
+      const hourKeys = Object.keys(groupedByHour).sort();
+      if (hourKeys.length === 0) {
+        historyPanel.innerHTML = `<div class="history-empty">No attendance logged on ${formatDateLabel(activeHistoryKey)}.</div>`;
+        return;
+      }
+
+      hourKeys.forEach(hr => {
+        const hourData = groupedByHour[hr];
+        const presentNames = hourData.filter(row => row.status === 'present').map(row => row.student_name);
+        const absentNames = hourData.filter(row => row.status === 'absent').map(row => row.student_name);
+
+        const section = document.createElement('div');
+        section.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
+        section.style.padding = '12px 8px';
+
+        section.innerHTML = `
+          <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px; font-size: 13.5px; font-family: 'Space Grotesk', sans-serif;">
+            ⚡ ${hr}
+          </div>
+          <div class="history-summary" style="margin: 0 0 10px 0; font-size: 11px;">
+            <div class="count"><span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present</div>
+            <div class="count"><span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent</div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <button class="filter-btn copy-btn" id="histCopyPresent-${hr}" style="font-size:10px; padding: 4px 8px;">📋 Copy Present</button>
+            <button class="filter-btn copy-btn" id="histCopyAbsent-${hr}" style="font-size:10px; padding: 4px 8px;">📋 Copy Absent</button>
+          </div>
+          <div class="history-list" id="histList-${hr}" style="margin: 0; max-height: 150px; overflow-y:auto; gap: 4px;"></div>
+        `;
+        historyPanel.appendChild(section);
+
+        const listEl = document.getElementById(`histList-${hr}`);
+        [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
+          const row = document.createElement('div');
+          row.className = 'history-item';
+          row.style.fontSize = '12px';
+          row.innerHTML = `<span>${escapeHtml(name)}</span><span class="status-tag ${status}">${status.toUpperCase()}</span>`;
+          listEl.appendChild(row);
+        });
+
+        // Copy interactions per period
+        document.getElementById(`histCopyPresent-${hr}`).addEventListener('click', () => {
+          if (!presentNames.length) return showToast('No present names');
+          copyToClipboard(presentNames.join('\n'));
+          showToast(`Copied ${presentNames.length} names`);
+        });
+        document.getElementById(`histCopyAbsent-${hr}`).addEventListener('click', () => {
+          if (!absentNames.length) return showToast('No absent names');
+          copyToClipboard(absentNames.join('\n'));
+          showToast(`Copied ${absentNames.length} names`);
+        });
       });
 
     } catch (error) {
+      console.error(error);
       historyPanel.innerHTML = `<div class="history-empty" style="color:var(--absent)">Failed to download history.</div>`;
     }
   }
