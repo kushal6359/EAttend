@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -216,11 +217,13 @@
   .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 26px 4px 12px; display: flex; justify-content: space-between; align-items: center; }
   .section-title .title-left { display: flex; align-items: center; gap: 8px; }
   
-  /* Filter Buttons */
-  .roster-filters { display: flex; gap: 6px; }
+  /* Filter & Copy Buttons */
+  .roster-filters { display: flex; gap: 6px; align-items: center; }
   .filter-btn { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 4px 10px; border-radius: 100px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: normal; text-transform: none; }
   .filter-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
   .filter-btn.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
+  .filter-btn.copy-btn { color: var(--accent); border-color: var(--accent); margin-left: 4px; }
+  .filter-btn.copy-btn:hover { background: var(--accent); color: white; }
 
   .roster { display: flex; flex-direction: column; gap: 8px; }
   .student-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; animation: rise 0.25s ease; }
@@ -390,7 +393,7 @@
     </div>
 
     <div class="bulk-add hidden" id="bulkAdd">
-      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Chota Bheem&#10;Siddharth&#10;Shakthimaan"></textarea>
+      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Alice Smith&#10;John Doe, Clara Oswald"></textarea>
       <div class="bulk-footer">
         <div class="preview-count" id="bulkPreview">0 names detected</div>
         <button class="btn-add" id="bulkAddBtn" disabled>+ Add all</button>
@@ -409,6 +412,8 @@
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="present">Present</button>
       <button class="filter-btn" data-filter="absent">Absent</button>
+      <!-- This copy button becomes visible when Present or Absent is selected -->
+      <button class="filter-btn copy-btn" id="copyFilteredBtn" style="display: none;" title="Copy filtered names">📋 Copy</button>
     </div>
   </div>
   
@@ -507,6 +512,17 @@
     if (!attendanceBySubject[activeSubjId][today]) attendanceBySubject[activeSubjId][today] = {};
     return attendanceBySubject[activeSubjId];
   }
+  
+  // Reusable clipboard function
+  function copyToClipboard(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed"; 
+    document.body.appendChild(textarea);
+    textarea.select();
+    try { document.execCommand('copy'); } catch (err) { console.error('Copy failed', err); }
+    document.body.removeChild(textarea);
+  }
 
   // ---------- Auto Clean Up Older Data ----------
   async function cleanupOldData() {
@@ -526,7 +542,6 @@
       });
       
       for (let date of datesToDelete) {
-        // Valid API call, no /keys/
         await fetch(`${SHEETDB_API_URL}/date/${date}?sheet=attendance`, { method: 'DELETE' });
       }
       if (datesToDelete.size > 0) console.log(`Cleaned up ${datesToDelete.size} old dates.`);
@@ -708,14 +723,37 @@
   drawerClose.addEventListener('click', closeDrawer);
   drawerBackdrop.addEventListener('click', (e) => { if (e.target === drawerBackdrop) closeDrawer(); });
 
-  // ---------- Roster Filter Handlers ----------
-  document.querySelectorAll('.filter-btn').forEach(btn => {
+  // ---------- Roster Filter Handlers & Inline Copying ----------
+  document.querySelectorAll('.filter-btn:not(.copy-btn)').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-btn:not(.copy-btn)').forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
       rosterFilter = e.target.dataset.filter;
+      
+      // Reveal copy button if filtering specific lists
+      const copyBtn = document.getElementById('copyFilteredBtn');
+      copyBtn.style.display = rosterFilter === 'all' ? 'none' : 'inline-block';
+      copyBtn.textContent = `📋 Copy ${rosterFilter === 'present' ? 'Present' : 'Absent'}`;
+      
       renderRoster();
     });
+  });
+  
+  document.getElementById('copyFilteredBtn').addEventListener('click', () => {
+    const students = currentStudents();
+    const att = currentAttendance();
+    const names = students.filter(st => {
+      const status = att[today] ? (att[today][st.name] || null) : null;
+      return rosterFilter === status;
+    }).map(s => s.name);
+
+    if (names.length === 0) {
+      showToast(`No students to copy for ${rosterFilter}`);
+      return;
+    }
+    
+    copyToClipboard(names.join('\n'));
+    showToast(`Copied ${names.length} ${rosterFilter} students`);
   });
 
   // ---------- Cloud Drawer/Subjects ----------
@@ -825,7 +863,6 @@
 
     showToast("Deleting from cloud...");
     try {
-      // Fix applied here: Removed invalid "/keys" path segment
       await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
       await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
 
@@ -903,8 +940,6 @@
         if (a[today][name] === status) { delete a[today][name]; }
         else { a[today][name] = status; }
         
-        // This only modifies local state. 
-        // Save triggers actual cloud push.
         renderRoster();
       });
     });
@@ -914,7 +949,6 @@
         const name = btn.dataset.remove;
         showToast('Removing student from cloud...');
         try {
-          // Fix applied here: Removed invalid "/keys" and safely encoded the string
           await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
           await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=attendance&subject_id=${activeSubjId}&date=${today}`, { method: 'DELETE' });
           
@@ -972,7 +1006,6 @@
     const currentSubjObj = subjects.find(s => s.id === activeSubjId);
 
     try {
-      // Fix applied here: Removed invalid "/keys" path segment
       await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
       await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
         method: 'POST',
@@ -1038,7 +1071,6 @@
     const rowsToSend = fresh.map(name => ({ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }));
 
     try {
-      // Fix applied here: Removed invalid "/keys" path segment
       await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
       await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
         method: 'POST',
@@ -1084,7 +1116,6 @@
     showToast('Saving to cloud...');
 
     try {
-      // Fix applied here: Removed invalid "/keys" path segment
       await fetch(`${SHEETDB_API_URL}/subject_id/${activeSubjId}?sheet=attendance&date=${today}`, {
         method: 'DELETE'
       });
@@ -1156,6 +1187,10 @@
           <div class="count"><span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present</div>
           <div class="count"><span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent</div>
         </div>
+        <div style="display: flex; gap: 8px; margin: 0 8px 14px;">
+          <button class="filter-btn copy-btn" id="histCopyPresent">📋 Copy Present</button>
+          <button class="filter-btn copy-btn" id="histCopyAbsent">📋 Copy Absent</button>
+        </div>
         <div class="history-list" id="histList"></div>
       `;
       
@@ -1165,6 +1200,18 @@
         row.className = 'history-item';
         row.innerHTML = `<span>${escapeHtml(name)}</span><span class="status-tag ${status}">${status.toUpperCase()}</span>`;
         listEl.appendChild(row);
+      });
+
+      // Bind copy buttons in history
+      document.getElementById('histCopyPresent').addEventListener('click', () => {
+        if (!presentNames.length) return showToast('No present names on this day');
+        copyToClipboard(presentNames.join('\n'));
+        showToast(`Copied ${presentNames.length} names`);
+      });
+      document.getElementById('histCopyAbsent').addEventListener('click', () => {
+        if (!absentNames.length) return showToast('No absent names on this day');
+        copyToClipboard(absentNames.join('\n'));
+        showToast(`Copied ${absentNames.length} names`);
       });
 
     } catch (error) {
@@ -1182,3 +1229,6 @@
 </script>
 </body>
 </html>
+
+
+```
