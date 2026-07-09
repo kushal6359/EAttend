@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subject Wise Attendance - Professional Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --glass: rgba(255, 255, 255, 0.08);
+    --glass-strong: rgba(255, 255, 255, 0.15);
+    --border: rgba(255, 255, 255, 0.18);
+    --text: #f5f6fb;
+    --text-dim: rgba(245, 246, 251, 0.62);
+    --present: #34d399;
+    --present-dim: rgba(52, 211, 153, 0.16);
+    --absent: #fb7185;
+    --absent-dim: rgba(251, 113, 133, 0.16);
+    --accent: #a78bfa;
+    --accent-dark: #7c3aed;
+    --warning: #fbbf24;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    background: #0f0a24;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated background blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .blob1 { width: 550px; height: 550px; background: #6d28d9; top: -180px; left: -160px; animation: float1 24s ease-in-out infinite; }
+  .blob2 { width: 480px; height: 480px; background: #0f766e; bottom: -200px; right: -140px; animation: float2 28s ease-in-out infinite; }
+  .blob3 { width: 400px; height: 400px; background: #be185d; top: 35%; left: 55%; animation: float3 32s ease-in-out infinite; opacity: 0.22; }
+  
+  @keyframes float1 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(80px,60px);} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-60px,-80px);} }
+  @keyframes float3 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-50px,50px) scale(1.08);} }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* Status Bar Indicators */
+  .network-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+  }
+  .network-badge.online { background: rgba(52, 211, 153, 0.15); color: var(--present); }
+  .network-badge.offline { background: rgba(251, 113, 133, 0.15); color: var(--absent); }
+  .network-badge.pending { background: rgba(251, 191, 36, 0.15); color: var(--warning); border-color: var(--warning); }
+
+  /* Header structure */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .menu-btn {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text); transition: all 0.2s;
+  }
+  .menu-btn:hover { background: var(--glass-strong); border-color: var(--accent); }
+  .menu-btn svg { width: 20px; height: 20px; fill: currentColor; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); font-weight: 600; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin-top: 2px; }
+  
+  .header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .date-pill {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; color: var(--text-dim);
+    background: var(--glass); border: 1px solid var(--border); padding: 8px 14px;
+    border-radius: 100px; backdrop-filter: blur(16px);
+  }
+  
+  /* Select Hour Styling */
+  .hour-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    padding: 2px 8px 2px 14px;
+    border-radius: 100px;
+  }
+  .hour-selector-container label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .hour-select {
+    background: transparent;
+    color: var(--text);
+    border: none;
+    outline: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    padding: 6px;
+  }
+  .hour-select option {
+    background: #0f0a24;
+    color: var(--text);
+  }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  }
+
+  /* Current Active Subject Panel */
+  .subject-status-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; margin-bottom: 16px; gap: 12px;
+  }
+  .current-subject-info { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .subject-tag {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0;
+  }
+  .active-subject-name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .rename-action-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+    font-size: 12.5px; font-weight: 500; padding: 6px 12px; border-radius: 100px;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+  }
+  .rename-action-btn:hover { color: var(--text); background: var(--glass); border-color: var(--accent); }
+
+  /* Side Drawer Styles */
+  .drawer-backdrop {
+    position: fixed; inset: 0; background: rgba(10, 8, 24, 0.6);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .drawer-backdrop.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 340px; max-width: 90%;
+    background: rgba(21, 16, 46, 0.94); border-right: 1px solid var(--border);
+    z-index: 101; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; flex-direction: column; box-shadow: 12px 0 40px rgba(0,0,0,0.4);
+  }
+  .drawer-backdrop.show .drawer { transform: translateX(0); }
+  .drawer-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .drawer-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
+  .drawer-close { background: transparent; border: none; color: var(--text-dim); font-size: 24px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+  .drawer-close:hover { background: var(--glass); color: var(--text); }
+  
+  /* Drawer Tabs */
+  .drawer-tabs { display: flex; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 0 10px; margin-bottom: 10px; }
+  .drawer-tab {
+    flex: 1; padding: 12px; text-align: center; font-size: 13px; font-weight: 600;
+    color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .drawer-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  .drawer-content { flex: 1; overflow-y: auto; padding: 10px 12px; display: none; }
+  .drawer-content.active { display: block; }
+  
+  .subject-list-header { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin: 8px 8px 12px; font-weight: 600; }
+  .drawer-subject-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; margin-bottom: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.15s ease; }
+  .drawer-subject-item:hover { background: var(--glass); }
+  .drawer-subject-item.active { background: var(--glass-strong); border-color: var(--accent); }
+  .subj-item-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+  .subj-item-name { font-weight: 600; font-size: 14.5px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .subj-item-count { font-size: 11px; color: var(--text-dim); }
+  .subj-actions { display: flex; gap: 4px; opacity: 0.8; }
+  .drawer-subject-item:hover .subj-actions { opacity: 1; }
+  .subj-btn { width: 30px; height: 30px; border-radius: 8px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .subj-btn:hover { background: var(--glass-strong); color: var(--text); }
+  .subj-btn.delete:hover { background: var(--absent-dim); color: var(--absent); }
+  
+  .drawer-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
+  .btn-new-subject { width: 100%; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; font-weight: 600; padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer; border: none; transition: transform 0.15s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3); }
+  .btn-new-subject:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
+  .btn-config { width: 100%; background: var(--glass); border: 1px solid var(--border); color: var(--text); font-weight: 600; padding: 10px; border-radius: 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+  .btn-config:hover { background: var(--glass-strong); border-color: var(--accent); }
+
+  /* Drawer History Content Styles */
+  .history-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; padding: 0 8px; }
+  .tab-btn { padding: 6px 12px; border-radius: 100px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s ease; }
+  .tab-btn.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
+  .history-empty { color: var(--text-dim); font-size: 13px; text-align: center; padding: 24px 8px; }
+  .history-summary { display: flex; gap: 16px; margin: 0 8px 14px; flex-wrap: wrap; }
+  .history-list { display: flex; flex-direction: column; gap: 6px; margin: 0 8px 14px; }
+  .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); font-size: 14px; }
+  .status-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; letter-spacing: 0.02em; }
+  .status-tag.present { background: var(--present-dim); color: var(--present); }
+  .status-tag.absent { background: var(--absent-dim); color: var(--absent); }
+
+  /* Circular Ring & Summary Card */
+  .summary { display: flex; align-items: center; gap: 20px; padding: 20px 22px; margin-bottom: 20px; }
+  .ring-holder { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+  .ring-holder svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 8; }
+  .ring-fg { fill: none; stroke: var(--present); stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
+  .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; }
+  .summary-text { flex: 1; min-width: 0; }
+  .summary-text .class-name-label { font-weight: 700; font-size: 15px; font-family: 'Space Grotesk', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .summary-text .count-row { display: flex; gap: 18px; margin-top: 6px; flex-wrap: wrap; }
+  .count { font-size: 13px; color: var(--text-dim); }
+  .count b { color: var(--text); font-weight: 600; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+  /* Add student Panel */
+  .add-panel { padding: 16px; margin-bottom: 20px; }
+  .add-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .add-tab { padding: 7px 14px; border-radius: 100px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
+  .add-tab.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
+  .add-row { display: flex; gap: 10px; }
+  .add-row.hidden, .bulk-add.hidden { display: none; }
+  input[type="text"] { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, background 0.2s; }
+  input[type="text"]::placeholder { color: rgba(245, 246, 251, 0.35); }
+  input[type="text"]:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
+  textarea { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 12px; font-size: 14.5px; font-family: 'Inter', sans-serif; outline: none; resize: vertical; min-height: 110px; line-height: 1.6; transition: border-color 0.2s, background 0.2s; }
+  textarea::placeholder { color: rgba(245, 246, 251, 0.35); }
+  textarea:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
+  .bulk-hint { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+  .bulk-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; flex-wrap: wrap; }
+  .preview-count { font-size: 12.5px; color: var(--text-dim); }
+  .preview-count b { color: var(--accent); }
+  
+  button { font-family: 'Inter', sans-serif; cursor: pointer; border: none; outline: none; }
+  
+  .btn-add { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; font-weight: 600; padding: 12px 20px; border-radius: 12px; font-size: 14px; white-space: nowrap; box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25); transition: transform 0.15s, box-shadow 0.15s; }
+  .btn-add:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35); }
+  .btn-add:active { transform: translateY(0); }
+  .btn-add:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Roster section */
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 26px 4px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .section-title .title-left { display: flex; align-items: center; gap: 8px; }
+  
+  /* Filter & Copy Buttons */
+  .roster-filters { display: flex; gap: 6px; align-items: center; }
+  .filter-btn { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 4px 10px; border-radius: 100px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: normal; text-transform: none; }
+  .filter-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .filter-btn.active { background: var(--glass-strong); color: var(--text); border-color: var(--accent); }
+  .filter-btn.copy-btn { color: var(--accent); border-color: var(--accent); margin-left: 4px; }
+  .filter-btn.copy-btn:hover { background: var(--accent); color: white; }
+
+  .roster { display: flex; flex-direction: column; gap: 8px; }
+  .student-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; animation: rise 0.25s ease; }
+  @keyframes rise { from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  
+  .student-name { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa, #6d28d9); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; flex-shrink: 0; color: white; }
+  .student-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .toggle-group { display: flex; gap: 6px; flex-shrink: 0; }
+  
+  .toggle-btn { padding: 7px 14px; border-radius: 100px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-dim); transition: all 0.15s ease; }
+  .toggle-btn.present.active { background: var(--present); color: #04241a; border-color: var(--present); }
+  .toggle-btn.absent.active { background: var(--absent); color: #2b0410; border-color: var(--absent); }
+  .toggle-btn:not(.active):hover { background: rgba(255,255,255,0.08); color: var(--text); }
+  
+  .remove-btn { background: none; color: rgba(245, 246, 251, 0.3); font-size: 18px; line-height: 1; padding: 4px 6px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+  .remove-btn:hover { color: var(--absent); background: rgba(251, 113, 133, 0.12); }
+
+  .empty-state { padding: 44px 20px; text-align: center; color: var(--text-dim); font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .empty-state-btn { background: var(--glass-strong); color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .empty-state-btn:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.2); }
+
+  /* Lower actions */
+  .actions { display: flex; justify-content: center; gap: 12px; margin-top: 24px; padding-bottom: 20px; flex-wrap: wrap;}
+  .btn-save {
+    background: linear-gradient(135deg, #34d399, #0d9488); border: none; color: #04241a;
+    width: 100%; max-width: 320px; padding: 14px 16px; border-radius: 100px; font-size: 14.5px;
+    font-weight: 700; box-shadow: 0 4px 16px rgba(52, 211, 153, 0.2); transition: all 0.15s ease;
+  }
+  .btn-save:hover:not(:disabled) { background: linear-gradient(135deg, #38efac, #0fa599); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3); }
+  .btn-save:disabled { opacity: 0.6; cursor: wait; }
+
+  /* WhatsApp CTA button style */
+  .btn-whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E); border: none; color: white;
+    width: 100%; max-width: 320px; padding: 14px 16px; border-radius: 100px; font-size: 14.5px;
+    font-weight: 700; box-shadow: 0 4px 16px rgba(37, 211, 102, 0.2); transition: all 0.15s ease;
+  }
+  .btn-whatsapp:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35); }
+  .btn-whatsapp svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* Toast alerts */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(20, 18, 40, 0.95); border: 1px solid var(--border); backdrop-filter: blur(16px); color: var(--text); padding: 12px 20px; border-radius: 100px; font-size: 13.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000; max-width: 90vw; text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Custom Glassmorphic Modals */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(8, 6, 20, 0.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+  .modal-backdrop.show { display: flex; }
+  .modal { width: 100%; max-width: 400px; padding: 24px; border-radius: 20px; animation: zoomIn 0.2s ease-out; }
+  @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { font-family: 'Space Grotesk', sans-serif; font-size: 19px; margin-bottom: 8px; font-weight: 700; }
+  .modal p { font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-bottom: 16px; }
+  .modal-input { width: 100%; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .modal-btn { padding: 10px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .modal-btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .modal-btn-cancel:hover { color: var(--text); background: var(--glass); }
+  .modal-btn-confirm { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; }
+  .modal-btn-confirm:hover { box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+  .modal-btn-danger { background: linear-gradient(135deg, #fb7185, #e11d48); color: white; }
+  .modal-btn-danger:hover { box-shadow: 0 4px 12px rgba(251, 113, 133, 0.3); }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 24px; }
+    .summary { flex-wrap: wrap; }
+    .date-pill { font-size: 12px; padding: 6px 12px; }
+    .header-meta { align-items: flex-start; margin-top: 4px; }
+    header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none; }
+    .student-row { animation: none; }
+    .modal { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated background glow -->
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<!-- Side Drawer (Subjects & History) -->
+<div class="drawer-backdrop" id="drawerBackdrop">
+  <div class="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">Dashboard</div>
+      <button class="drawer-close" id="drawerClose">&times;</button>
+    </div>
+    
+    <div class="drawer-tabs">
+      <div class="drawer-tab active" id="tabDrawSubj">Subjects</div>
+      <div class="drawer-tab" id="tabDrawHist">History</div>
+    </div>
+    
+    <!-- Drawer: Subject View -->
+    <div class="drawer-content active" id="drawerSubjectContent">
+      <div class="subject-list-header">All Subjects</div>
+      <div id="drawerSubjectList">
+        <!-- Subject items rendered here -->
+      </div>
+    </div>
+
+    <!-- Drawer: History View -->
+    <div class="drawer-content" id="drawerHistoryContent">
+      <div class="subject-list-header" id="historyDrawerTitle">Attendance History</div>
+      <div class="history-tabs" id="historyTabs"></div>
+      <div class="history-panel" id="historyPanel" style="padding:0; margin-top:8px;"></div>
+    </div>
+    
+    <!-- Drawer Footer only shown for Subjects -->
+    <div class="drawer-footer" id="drawerFooter">
+      <button class="btn-new-subject" id="drawerNewSubjBtn">
+        <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Add New Subject
+      </button>
+      <button class="btn-config" id="drawerConfigBtn">
+        <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Database Configuration
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="header-left">
+      <button class="menu-btn" id="menuBtn" title="Open Dashboard">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+      <div>
+        <div class="eyebrow" style="display:flex; align-items:center; gap:8px;">
+          <span>Subject-Wise Attendance</span>
+          <span id="connectionBadge" class="network-badge online">Checking...</span>
+        </div>
+        <h1>Roll Call</h1>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="date-pill" id="todayLabel">—</div>
+      <!-- Period selector mapping directly to targeted hourly saves -->
+      <div class="hour-selector-container">
+        <label for="hourSelect">Period:</label>
+        <select id="hourSelect" class="hour-select">
+          <option value="Hour 1" selected>Hour 1</option>
+          <option value="Hour 2">Hour 2</option>
+          <option value="Hour 3">Hour 3</option>
+          <option value="Hour 4">Hour 4</option>
+          <option value="Hour 5">Hour 5</option>
+          <option value="Hour 6">Hour 6</option>
+          <option value="Hour 7">Hour 7</option>
+          <option value="Hour 8">Hour 8</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Current Active Subject Status bar -->
+  <div class="glass subject-status-bar">
+    <div class="current-subject-info">
+      <span class="subject-tag">Subject</span>
+      <div class="active-subject-name" id="activeSubjectLabel">No Subject Selected</div>
+    </div>
+    <button class="rename-action-btn" id="headerRenameBtn" title="Rename this subject">
+      <svg style="width:12px; height:12px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+      Rename
+    </button>
+  </div>
+
+  <!-- Metric Summary Ring -->
+  <div class="glass summary">
+    <div class="ring-holder">
+      <svg width="76" height="76" viewBox="0 0 76 76">
+        <circle class="ring-bg" cx="38" cy="38" r="30"></circle>
+        <circle class="ring-fg" id="ringFg" cx="38" cy="38" r="30" stroke-dasharray="0 999"></circle>
+      </svg>
+      <div class="ring-label" id="ringLabel">0%</div>
+    </div>
+    <div class="summary-text">
+      <div class="class-name-label" id="summarySubjName">—</div>
+      <div class="count-row">
+        <div class="count"><span class="dot" style="background:var(--present)"></span><b id="presentCount">0</b> present</div>
+        <div class="count"><span class="dot" style="background:var(--absent)"></span><b id="absentCount">0</b> absent</div>
+        <div class="count"><b id="totalCount">0</b> total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Student Panel -->
+  <div class="glass add-panel">
+    <div class="add-tabs">
+      <button class="add-tab active" id="tabSingle">Add Student</button>
+      <button class="add-tab" id="tabBulk">Add Multiple</button>
+    </div>
+
+    <div class="add-row" id="singleAdd">
+      <input type="text" id="nameInput" placeholder="Add student name…" maxlength="60">
+      <button class="btn-add" id="addBtn">+ Add</button>
+    </div>
+
+    <div class="bulk-add hidden" id="bulkAdd">
+      <textarea id="bulkInput" placeholder="Type or paste names here — one per line, or separated by commas.&#10;&#10;e.g.&#10;Chota Bheem&#10;Siddhart, Shakthimaan"></textarea>
+      <div class="bulk-footer">
+        <div class="preview-count" id="bulkPreview">0 names detected</div>
+        <button class="btn-add" id="bulkAddBtn" disabled>+ Add all</button>
+      </div>
+      <div class="bulk-hint">Duplicate names and blank entries are filtered out automatically.</div>
+    </div>
+  </div>
+
+  <!-- Roster Section & Filters -->
+  <div class="section-title">
+    <div class="title-left">
+      <span>Roster</span>
+      <span id="rosterHint" style="text-transform:none; letter-spacing:normal; font-size:12px;"></span>
+    </div>
+    <div class="roster-filters" id="rosterFilters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="present">Present</button>
+      <button class="filter-btn" data-filter="absent">Absent</button>
+      <!-- This copy button becomes visible when Present or Absent is selected -->
+      <button class="filter-btn copy-btn" id="copyFilteredBtn" style="display: none;" title="Copy filtered names">📋 Copy</button>
+    </div>
+  </div>
+  
+  <div class="glass" style="padding:6px;">
+    <div class="roster" id="roster"></div>
+  </div>
+
+  <!-- Actions: Save and Share -->
+  <div class="actions">
+    <button class="btn-save" id="saveBtn">✓ Save Attendance</button>
+    
+    <!-- WhatsApp Action Button -->
+    <button class="btn-whatsapp" id="whatsappBtn" title="Share absentees list to WhatsApp">
+      <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+      Share Absentees to WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- Config Modal -->
+<div class="modal-backdrop" id="configModal">
+  <div class="glass modal" style="max-width: 440px;">
+    <h3>Database Setup</h3>
+    <p>Set up your API URL parameters securely below. Changes persist locally.</p>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+      <label style="font-size:12px; font-weight:600; color:var(--text-dim)">SheetDB URL:</label>
+      <input type="text" id="configApiUrlField" placeholder="https://sheetdb.io/api/v1/..." style="font-size:13px; padding:10px 12px;">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="configModalCancel">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" id="configModalSubmit">Apply Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Input Dialog Modal -->
+<div class="modal-backdrop" id="inputModal">
+  <div class="glass modal">
+    <h3 id="inputModalTitle">New Subject</h3>
+    <p id="inputModalDesc">Enter the name of the subject.</p>
+    <input type="text" class="modal-input" id="inputModalField" placeholder="e.g. Mathematics, Physics..." maxlength="50">
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="inputModalCancel">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" id="inputModalSubmit">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- General Confirmation Modal -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="glass modal">
+    <h3 id="confirmModalTitle" style="color: var(--absent)">Delete Subject?</h3>
+    <p id="confirmModalDesc">Are you sure you want to delete this subject and all of its recorded history? This action is permanent.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="confirmModalCancel">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" id="confirmModalSubmit">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Diagnostics / Error Modal -->
+<div class="modal-backdrop" id="alertModal">
+  <div class="glass modal" style="max-width: 440px;">
+    <h3 id="alertModalTitle" style="color: var(--absent)">Cloud Connection Failed</h3>
+    <p id="alertModalDesc" style="white-space: pre-wrap; font-size: 13.5px; line-height: 1.6; margin-bottom: 20px;"></p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-confirm" id="alertModalClose">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ================== APP LOGIC ================== -->
+<script>
+  // ---------- Secure State Configuration Manager ----------
+  const DEFAULT_API_URL = "https://sheetdb.io/api/v1/1zmkdfeyas1ei";
+  
+  function getApiUrl() {
+    return localStorage.getItem('ROLL_CALL_API_URL') || DEFAULT_API_URL;
+  }
+  
+  function setApiUrl(newUrl) {
+    if (newUrl) {
+      localStorage.setItem('ROLL_CALL_API_URL', newUrl.trim());
+    } else {
+      localStorage.removeItem('ROLL_CALL_API_URL');
+    }
+  }
+
+  // In-memory application state
+  let subjects = []; 
+  let studentsBySubject = {}; 
+  let attendanceBySubject = {}; 
+  let activeSubjId = '';
+  let rosterFilter = 'all'; // all, present, absent
+  let lastLoadedSubjectId = '';
+  let lastSelectedHour = "Hour 1";
+  
+  // Caching mechanism to avoid excessive rate-limiting API requests
+  let cache = {
+    roster: null,
+    history: {},
+    lastFetchedRoster: 0,
+    lastFetchedHistory: 0,
+    ttl: 20000 // 20 seconds TTL
+  };
+
+  // Safe unique ID generator
+  function uid() { 
+    return 's' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6); 
+  }
+
+  // Resilient date conversion (handles serial date integers from spreadsheet converters)
+  function parseSheetDate(key) {
+    if (!key) return new Date();
+    key = String(key).trim();
+    if (/^\d+$/.test(key)) {
+      const serial = parseInt(key, 10);
+      return new Date((serial - 25569) * 86400 * 1000);
+    }
+    const parts = key.split('-').map(Number);
+    if (parts.length === 3 && !parts.some(isNaN)) {
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    const parsed = new Date(key);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+
+  function normalizeDateToKey(date) {
+    return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+  }
+
+  const today = normalizeDateToKey(new Date());
+
+  function formatDateLabel(key){
+    const dt = parseSheetDate(key);
+    return dt.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+  }
+
+  function prevDateKeys(n){
+    const keys = [];
+    const d = new Date();
+    for(let i=1; i<=n; i++){
+      const dd = new Date(d);
+      dd.setDate(d.getDate() - i);
+      keys.push(normalizeDateToKey(dd));
+    }
+    return keys;
+  }
+
+  function initials(name){
+    const parts = name.trim().split(/\s+/);
+    return (parts[0] ? parts[0][0] : '') + (parts[1] ? parts[1][0] : '');
+  }
+
+  function currentStudents(){
+    if (!activeSubjId) return [];
+    if (!studentsBySubject[activeSubjId]) studentsBySubject[activeSubjId] = [];
+    return studentsBySubject[activeSubjId];
+  }
+
+  function currentAttendance(){
+    if (!activeSubjId) return {};
+    if (!attendanceBySubject[activeSubjId]) attendanceBySubject[activeSubjId] = {};
+    if (!attendanceBySubject[activeSubjId][today]) attendanceBySubject[activeSubjId][today] = {};
+    return attendanceBySubject[activeSubjId];
+  }
+
+  // Safe clipboard helper (replaces deprecated command APIs with modern safe Fallbacks)
+  async function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.warn("Navigator clipboard copy failed, trying programmatic fallback:", err);
+      }
+    }
+    
+    // Graceful iframe-safe browser fallback selection block
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed"; 
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try { 
+      document.execCommand('copy'); 
+    } catch (err) { 
+      console.error('All clipboard operations blocked', err); 
+    }
+    document.body.removeChild(textarea);
+  }
+
+  // ---------- Offline Queue and Local Backup Storage Integration ----------
+  function loadLocalBackup() {
+    try {
+      const backup = localStorage.getItem('ROLL_CALL_OFFLINE_BACKUP');
+      if (backup) {
+        const data = JSON.parse(backup);
+        studentsBySubject = data.studentsBySubject || {};
+        attendanceBySubject = data.attendanceBySubject || {};
+        subjects = data.subjects || [];
+        if (!activeSubjId && subjects.length > 0) {
+          activeSubjId = subjects[0].id;
+        }
+        updateNetworkBadge('offline', 'Loaded Local Offline Backup');
+        renderAll();
+      }
+    } catch (e) {
+      console.error("Local backup loading process failed: ", e);
+    }
+  }
+
+  function saveLocalBackup() {
+    try {
+      const data = {
+        studentsBySubject,
+        attendanceBySubject,
+        subjects
+      };
+      localStorage.setItem('ROLL_CALL_OFFLINE_BACKUP', JSON.stringify(data));
+    } catch (e) {
+      console.error("Local backup saving process failed: ", e);
+    }
+  }
+
+  function updateNetworkBadge(status, customMsg = '') {
+    const badge = document.getElementById('connectionBadge');
+    badge.className = 'network-badge ' + status;
+    if (status === 'online') {
+      badge.textContent = 'Cloud Active';
+    } else if (status === 'offline') {
+      badge.textContent = customMsg || 'Offline Draft';
+    } else if (status === 'pending') {
+      badge.textContent = 'Syncing...';
+    }
+  }
+
+  // ---------- Robust Request API Wrapper with Timeout & Connection Safeguards ----------
+  async function fetchWithTimeout(resource, options = {}) {
+    const { timeout = 12000 } = options;
+    
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  }
+
+  // ---------- Dialog Modals ----------
+  const alertModal = document.getElementById('alertModal');
+  const alertModalTitle = document.getElementById('alertModalTitle');
+  const alertModalDesc = document.getElementById('alertModalDesc');
+  const alertModalClose = document.getElementById('alertModalClose');
+
+  function showAlertModal(title, descriptionHtml) {
+    alertModalTitle.textContent = title;
+    alertModalDesc.innerHTML = descriptionHtml;
+    alertModal.classList.add('show');
+  }
+  alertModalClose.addEventListener('click', () => { alertModal.classList.remove('show'); });
+
+  // Custom promise dialog wrappers (preventing overlap crashes)
+  let activeInputResolve = null;
+  let activeConfirmResolve = null;
+
+  const inputModal = document.getElementById('inputModal');
+  const inputModalTitle = document.getElementById('inputModalTitle');
+  const inputModalDesc = document.getElementById('inputModalDesc');
+  const inputModalField = document.getElementById('inputModalField');
+  const inputModalCancel = document.getElementById('inputModalCancel');
+  const inputModalSubmit = document.getElementById('inputModalSubmit');
+
+  function showPromptModal(title, description, placeholder, initialValue = "") {
+    if (activeInputResolve) activeInputResolve(null);
+    return new Promise((resolve) => {
+      inputModalTitle.textContent = title;
+      inputModalDesc.textContent = description;
+      inputModalField.placeholder = placeholder;
+      inputModalField.value = initialValue;
+      inputModal.classList.add('show');
+      inputModalField.focus();
+      activeInputResolve = resolve;
+    });
+  }
+
+  inputModalSubmit.addEventListener('click', () => {
+    const value = inputModalField.value.trim();
+    inputModal.classList.remove('show');
+    if (activeInputResolve) { activeInputResolve(value || null); activeInputResolve = null; }
+  });
+  inputModalCancel.addEventListener('click', () => {
+    inputModal.classList.remove('show');
+    if (activeInputResolve) { activeInputResolve(null); activeInputResolve = null; }
+  });
+  inputModalField.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') inputModalSubmit.click();
+    if (e.key === 'Escape') inputModalCancel.click();
+  });
+
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmModalTitle = document.getElementById('confirmModalTitle');
+  const confirmModalDesc = document.getElementById('confirmModalDesc');
+  const confirmModalCancel = document.getElementById('confirmModalCancel');
+  const confirmModalSubmit = document.getElementById('confirmModalSubmit');
+
+  function showConfirmModal(title, description) {
+    if (activeConfirmResolve) activeConfirmResolve(false);
+    return new Promise((resolve) => {
+      confirmModalTitle.textContent = title;
+      confirmModalDesc.textContent = description;
+      confirmModal.classList.add('show');
+      activeConfirmResolve = resolve;
+    });
+  }
+
+  confirmModalSubmit.addEventListener('click', () => {
+    confirmModal.classList.remove('show');
+    if (activeConfirmResolve) { activeConfirmResolve(true); activeConfirmResolve = null; }
+  });
+  confirmModalCancel.addEventListener('click', () => {
+    confirmModal.classList.remove('show');
+    if (activeConfirmResolve) { activeConfirmResolve(false); activeConfirmResolve = null; }
+  });
+
+  // ---------- Error Diagnostics Handler ----------
+  async function handleHttpError(response, context) {
+    const status = response.status;
+    let details = "An unexpected error occurred during database transactions.";
+    
+    try {
+      const errJson = await response.json();
+      if (errJson && errJson.error) details = errJson.error;
+    } catch (e) {
+      try {
+        const text = await response.text();
+        if (text) details = text;
+      } catch(err) {}
+    }
+
+    if (status === 429) {
+      showAlertModal(
+        "API Limit Reached (429)",
+        `Your <b>SheetDB API Key</b> has reached its execution limit.<br><br><b>How to fix this:</b><br>1. Check your usage status on your Dashboard.<br>2. Wait for your monthly quota reset.<br>3. Set up a custom SheetDB API URL inside our <b>Configuration Menu</b>.`
+      );
+    } else if (status === 403) {
+      showAlertModal(
+        "Access Forbidden (403)",
+        `Authentication rejected. Your SheetDB API URL may be incorrect or missing headers/permissions.`
+      );
+    } else {
+      showAlertModal(
+        `Cloud Error (${status})`,
+        `<b>Context:</b> ${context}<br><b>Details:</b> ${details}<br><br>Please verify your sheet headers contain the required columns: <code>subject_id</code>, <code>date</code>, <code>hour</code>, <code>student_name</code>, <code>status</code>.`
+      );
+    }
+  }
+
+  // ---------- GLOBAL CLOUD FETCH & DEEP CACHING ----------
+  async function initializeAppFromCloud(bypassCache = false) {
+    updateNetworkBadge('pending');
+    showToast("Connecting to cloud database...");
+
+    const now = Date.now();
+    if (!bypassCache && cache.roster && (now - cache.lastFetchedRoster < cache.ttl)) {
+      showToast("✓ Using Cached Data");
+      updateNetworkBadge('online');
+      return;
+    }
+
+    try {
+      const response = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`);
+      if (!response.ok) {
+        handleHttpError(response, "Initial Cloud Fetch");
+        loadLocalBackup();
+        return;
+      }
+      const rosterData = await response.json();
+      cache.roster = rosterData;
+      cache.lastFetchedRoster = now;
+
+      const subjectMap = new Map();
+      studentsBySubject = {};
+
+      if (rosterData && rosterData.length > 0) {
+        rosterData.forEach(row => {
+          if (row.subject_id) {
+            if (!subjectMap.has(row.subject_id)) {
+              subjectMap.set(row.subject_id, row.subject_name || "Classroom Subject");
+            }
+            if (!studentsBySubject[row.subject_id]) {
+              studentsBySubject[row.subject_id] = [];
+            }
+            if (row.student_name && row.student_name !== "__INIT_EMPTY__") {
+              studentsBySubject[row.subject_id].push({ name: row.student_name });
+            }
+          }
+        });
+        subjects = Array.from(subjectMap.entries()).map(([id, name]) => ({ id, name }));
+        
+        if (subjects.length > 0 && !activeSubjId) {
+          activeSubjId = subjects[0].id;
+        }
+      }
+
+      // Sync active subject logs locally
+      if (activeSubjId) {
+        lastLoadedSubjectId = activeSubjId;
+        const selectedHour = document.getElementById('hourSelect').value;
+        const attResponse = await fetchWithTimeout(`${getApiUrl()}/search?subject_id=${activeSubjId}&sheet=attendance`);
+        
+        if (attResponse.ok) {
+          const attData = await attResponse.json();
+          attendanceBySubject = {};
+          if (attData && attData.length > 0 && !attData.error) {
+            attData.forEach(row => {
+              if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
+              
+              const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+              if (!attendanceBySubject[row.subject_id][rowDateKey]) {
+                attendanceBySubject[row.subject_id][rowDateKey] = {};
+              }
+              
+              const rowHour = row.hour || "Hour 1";
+              if (rowDateKey === today && rowHour === selectedHour) {
+                attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
+              }
+            });
+          }
+        }
+      }
+
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      showToast("✓ Cloud Sync Complete");
+      renderAll();
+    } catch (error) {
+      console.error(error);
+      showToast("⚠️ Offline: Using Local Backup Mode");
+      loadLocalBackup();
+    }
+  }
+
+  // ---------- Switch Period / Hour Block ----------
+  async function loadHourAttendance() {
+    if (!activeSubjId) return;
+    const selectedHour = document.getElementById('hourSelect').value;
+    
+    const isSameSubject = (lastLoadedSubjectId === activeSubjId);
+    const hasCurrentMarks = currentAttendance()[today] && Object.keys(currentAttendance()[today]).length > 0;
+    
+    let draftToCarry = {};
+    
+    if (isSameSubject && hasCurrentMarks && (lastSelectedHour !== selectedHour)) {
+      // Prompt user whether they want to duplicate the attendance state as a draft template
+      const confirmDraftTransfer = await showConfirmModal(
+        "Period Transition Draft",
+        `Do you want to copy the attendance roster states from "${lastSelectedHour}" to your new draft for "${selectedHour}"?`
+      );
+      if (confirmDraftTransfer) {
+        draftToCarry = { ...currentAttendance()[today] };
+      }
+    }
+    
+    lastLoadedSubjectId = activeSubjId;
+    lastSelectedHour = selectedHour;
+    
+    updateNetworkBadge('pending');
+    showToast(`Syncing Period: ${selectedHour}...`);
+
+    try {
+      const attResponse = await fetchWithTimeout(`${getApiUrl()}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      if (!attResponse.ok) {
+        handleHttpError(attResponse, "Load Period Attendance");
+        updateNetworkBadge('offline', 'Period Switched Offline');
+        return;
+      }
+      const attData = await attResponse.json();
+
+      if (!attendanceBySubject[activeSubjId]) attendanceBySubject[activeSubjId] = {};
+      
+      let hasRecordsForNewHour = false;
+      const newHourData = {};
+
+      if (attData && attData.length > 0 && !attData.error) {
+        attData.forEach(row => {
+          const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+          const rowHour = row.hour || "Hour 1";
+          if (rowDateKey === today && rowHour === selectedHour) {
+            newHourData[row.student_name] = row.status;
+            hasRecordsForNewHour = true;
+          }
+        });
+      }
+
+      if (hasRecordsForNewHour) {
+        attendanceBySubject[activeSubjId][today] = newHourData;
+        showToast(`Loaded saved markings for ${selectedHour}`);
+      } else {
+        attendanceBySubject[activeSubjId][today] = draftToCarry;
+        if (Object.keys(draftToCarry).length > 0) {
+          showToast(`Transferred draft to ${selectedHour}. Remember to save!`);
+        } else {
+          showToast(`Roster ready for ${selectedHour}`);
+        }
+      }
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      renderRoster();
+    } catch (e) {
+      console.error(e);
+      updateNetworkBadge('offline', 'Offline (Local Switched)');
+      attendanceBySubject[activeSubjId][today] = draftToCarry;
+      renderRoster();
+      showToast("⚠️ Running offline. Draft preserved.");
+    }
+  }
+
+  document.getElementById('hourSelect').addEventListener('change', loadHourAttendance);
+
+  // ---------- DOM Elements Configuration & Event Bindings ----------
+  const rosterEl = document.getElementById('roster');
+  const nameInput = document.getElementById('nameInput');
+  const addBtn = document.getElementById('addBtn');
+  const todayLabel = document.getElementById('todayLabel');
+  const toast = document.getElementById('toast');
+  const ringFg = document.getElementById('ringFg');
+  const ringLabel = document.getElementById('ringLabel');
+  const presentCountEl = document.getElementById('presentCount');
+  const absentCountEl = document.getElementById('absentCount');
+  const totalCountEl = document.getElementById('totalCount');
+  const rosterHint = document.getElementById('rosterHint');
+  const activeSubjectLabel = document.getElementById('activeSubjectLabel');
+  const summarySubjName = document.getElementById('summarySubjName');
+  
+  // Drawer Elements
+  const menuBtn = document.getElementById('menuBtn');
+  const drawerBackdrop = document.getElementById('drawerBackdrop');
+  const drawerClose = document.getElementById('drawerClose');
+  
+  const tabDrawSubj = document.getElementById('tabDrawSubj');
+  const tabDrawHist = document.getElementById('tabDrawHist');
+  const drawerSubjectContent = document.getElementById('drawerSubjectContent');
+  const drawerHistoryContent = document.getElementById('drawerHistoryContent');
+  const drawerFooter = document.getElementById('drawerFooter');
+  
+  const drawerSubjectList = document.getElementById('drawerSubjectList');
+  const drawerNewSubjBtn = document.getElementById('drawerNewSubjBtn');
+  const headerRenameBtn = document.getElementById('headerRenameBtn');
+
+  // Database settings config mapping
+  const drawerConfigBtn = document.getElementById('drawerConfigBtn');
+  const configModal = document.getElementById('configModal');
+  const configApiUrlField = document.getElementById('configApiUrlField');
+  const configModalCancel = document.getElementById('configModalCancel');
+  const configModalSubmit = document.getElementById('configModalSubmit');
+
+  todayLabel.textContent = formatDateLabel(today);
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toast.classList.remove('show'), 2400);
+  }
+
+  // --- Database Settings Config Action Blocks ---
+  drawerConfigBtn.addEventListener('click', () => {
+    configApiUrlField.value = getApiUrl();
+    configModal.classList.add('show');
+  });
+
+  configModalCancel.addEventListener('click', () => {
+    configModal.classList.remove('show');
+  });
+
+  configModalSubmit.addEventListener('click', () => {
+    const freshUrl = configApiUrlField.value.trim();
+    if (freshUrl) {
+      setApiUrl(freshUrl);
+      showToast("API Endpoint Settings Updated");
+      configModal.classList.remove('show');
+      closeDrawer();
+      initializeAppFromCloud(true);
+    } else {
+      showToast("Cannot use an empty URL");
+    }
+  });
+
+  // ---------- Drawer Tab Controls ----------
+  tabDrawSubj.addEventListener('click', () => {
+    tabDrawSubj.classList.add('active'); tabDrawHist.classList.remove('active');
+    drawerSubjectContent.classList.add('active'); drawerHistoryContent.classList.remove('active');
+    drawerFooter.style.display = 'flex';
+  });
+  tabDrawHist.addEventListener('click', () => {
+    tabDrawHist.classList.add('active'); tabDrawSubj.classList.remove('active');
+    drawerHistoryContent.classList.add('active'); drawerSubjectContent.classList.remove('active');
+    drawerFooter.style.display = 'none';
+    renderHistory();
+  });
+
+  function openDrawer() {
+    renderDrawerSubjects();
+    drawerBackdrop.classList.add('show');
+  }
+  function closeDrawer() { drawerBackdrop.classList.remove('show'); }
+
+  menuBtn.addEventListener('click', openDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  drawerBackdrop.addEventListener('click', (e) => { if (e.target === drawerBackdrop) closeDrawer(); });
+
+  // ---------- Filter Handlers & Copy Setup ----------
+  document.querySelectorAll('.filter-btn:not(.copy-btn)').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.filter-btn:not(.copy-btn)').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      rosterFilter = e.target.dataset.filter;
+      
+      const copyBtn = document.getElementById('copyFilteredBtn');
+      copyBtn.style.display = rosterFilter === 'all' ? 'none' : 'inline-block';
+      copyBtn.textContent = `📋 Copy ${rosterFilter === 'present' ? 'Present' : 'Absent'}`;
+      
+      renderRoster();
+    });
+  });
+  
+  document.getElementById('copyFilteredBtn').addEventListener('click', async () => {
+    const students = currentStudents();
+    const att = currentAttendance();
+    const names = students.filter(st => {
+      const status = att[today] ? (att[today][st.name] || null) : null;
+      return rosterFilter === status;
+    }).map(s => s.name);
+
+    if (names.length === 0) {
+      showToast(`No students matched "${rosterFilter}" filter.`);
+      return;
+    }
+    
+    const statusText = names.join('\n');
+    await copyToClipboard(statusText);
+    showToast(`Copied ${names.length} ${rosterFilter} students`);
+  });
+
+  // ---------- Secure Drawer/Subjects Rendering (Anti-XSS) ----------
+  function renderDrawerSubjects(){
+    drawerSubjectList.innerHTML = '';
+    if (subjects.length === 0) {
+      const emptyCont = document.createElement('div');
+      emptyCont.className = 'empty-state';
+      emptyCont.style.padding = '24px 8px';
+      
+      const emptySpan = document.createElement('span');
+      emptySpan.textContent = 'No subjects created yet.';
+      emptyCont.appendChild(emptySpan);
+      
+      const emptyBtn = document.createElement('button');
+      emptyBtn.className = 'empty-state-btn';
+      emptyBtn.textContent = 'Create One';
+      emptyBtn.addEventListener('click', triggerAddNewSubject);
+      emptyCont.appendChild(emptyBtn);
+
+      drawerSubjectList.appendChild(emptyCont);
+      return;
+    }
+
+    subjects.forEach(subj => {
+      const studentCount = (studentsBySubject[subj.id] || []).length;
+      
+      const item = document.createElement('div');
+      item.className = 'drawer-subject-item' + (subj.id === activeSubjId ? ' active' : '');
+      
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.subj-btn')) return; 
+        activeSubjId = subj.id;
+        loadHourAttendance(); 
+        closeDrawer();
+      });
+
+      const info = document.createElement('div');
+      info.className = 'subj-item-info';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'subj-item-name';
+      nameSpan.textContent = subj.name;
+      
+      const countSpan = document.createElement('span');
+      countSpan.className = 'subj-item-count';
+      countSpan.textContent = `${studentCount} Student${studentCount === 1 ? '' : 's'}`;
+      
+      info.appendChild(nameSpan);
+      info.appendChild(countSpan);
+      
+      const actions = document.createElement('div');
+      actions.className = 'subj-actions';
+      
+      const renameBtn = document.createElement('button');
+      renameBtn.className = 'subj-btn';
+      renameBtn.title = "Rename Subject";
+      renameBtn.innerHTML = `<svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>`;
+      renameBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerRenameSubject(subj.id);
+      });
+      
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'subj-btn delete';
+      deleteBtn.title = "Delete Subject";
+      deleteBtn.innerHTML = `<svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerDeleteSubject(subj.id);
+      });
+
+      actions.appendChild(renameBtn);
+      actions.appendChild(deleteBtn);
+      item.appendChild(info);
+      item.appendChild(actions);
+      drawerSubjectList.appendChild(item);
+    });
+  }
+
+  async function triggerAddNewSubject() {
+    const val = await showPromptModal("New Subject", "Type the name of the subject you want to track:", "e.g. Mathematics, Chemistry, Arts");
+    if (!val) return;
+    
+    // Duplicate Validation
+    const isDuplicate = subjects.some(s => s.name.toLowerCase() === val.toLowerCase());
+    if (isDuplicate) {
+      showToast("⚠️ Subject name already exists");
+      return;
+    }
+
+    showToast("Saving subject to cloud...");
+    const id = uid();
+    updateNetworkBadge('pending');
+
+    try {
+      const res = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [{ "subject_id": id, "subject_name": val, "student_name": "__INIT_EMPTY__" }] })
+      });
+      if (!res.ok) {
+        handleHttpError(res, "Add New Subject");
+        updateNetworkBadge('offline', 'Offline Mode Activated');
+        return;
+      }
+
+      subjects.push({ id, name: val });
+      studentsBySubject[id] = [];
+      attendanceBySubject[id] = {};
+      activeSubjId = id;
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      renderAll();
+      renderDrawerSubjects();
+      showToast(`Created Subject: "${val}"`);
+    } catch(e) { 
+      // Safe offline local operation fallback
+      subjects.push({ id, name: val });
+      studentsBySubject[id] = [];
+      attendanceBySubject[id] = {};
+      activeSubjId = id;
+      saveLocalBackup();
+      renderAll();
+      renderDrawerSubjects();
+      updateNetworkBadge('offline', 'Offline Save Applied');
+      showToast("✓ Saved Subject locally (Offline)");
+    }
+  }
+  drawerNewSubjBtn.addEventListener('click', triggerAddNewSubject);
+
+  async function triggerRenameSubject(subjId) {
+    const subject = subjects.find(s => s.id === subjId);
+    if (!subject) return;
+    const val = await showPromptModal("Rename Subject", `Provide a new name for "${subject.name}":`, "e.g. Adv. Mathematics", subject.name);
+    if (!val || val === subject.name) return;
+
+    showToast("Updating cloud data...");
+    updateNetworkBadge('pending');
+
+    try {
+      const res = await fetchWithTimeout(`${getApiUrl()}/subject_id/${subjId}?sheet=roster`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { "subject_name": val } })
+      });
+      if (!res.ok) {
+        handleHttpError(res, "Rename Subject");
+        updateNetworkBadge('offline', 'Offline Operation');
+        return;
+      }
+
+      const oldName = subject.name;
+      subject.name = val;
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      renderAll();
+      renderDrawerSubjects();
+      showToast(`Renamed to "${val}"`);
+    } catch(e) { 
+      subject.name = val;
+      saveLocalBackup();
+      renderAll();
+      renderDrawerSubjects();
+      updateNetworkBadge('offline', 'Local Override Action');
+      showToast("✓ Renamed locally (Offline)");
+    }
+  }
+  headerRenameBtn.addEventListener('click', () => {
+    if (activeSubjId) triggerRenameSubject(activeSubjId);
+    else showToast("Create a subject first!");
+  });
+
+  async function triggerDeleteSubject(subjId) {
+    const subject = subjects.find(s => s.id === subjId);
+    if (!subject) return;
+
+    const confirm = await showConfirmModal(
+      `Delete "${subject.name}"?`,
+      "This action is permanent and deletes all students and rosters. Are you absolutely sure?"
+    );
+    if (!confirm) return;
+
+    showToast("Deleting from cloud...");
+    updateNetworkBadge('pending');
+
+    try {
+      const res1 = await fetchWithTimeout(`${getApiUrl()}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
+      // Clear all dependent attendance logs as well to ensure clean databases
+      await fetchWithTimeout(`${getApiUrl()}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
+
+      if (!res1.ok) { 
+        handleHttpError(res1, "Delete Subject"); 
+        updateNetworkBadge('offline');
+        return; 
+      }
+
+      subjects = subjects.filter(s => s.id !== subjId);
+      delete studentsBySubject[subjId];
+      delete attendanceBySubject[subjId];
+
+      if (activeSubjId === subjId) activeSubjId = subjects[0]?.id || '';
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      renderAll();
+      renderDrawerSubjects();
+      showToast(`Deleted "${subject.name}"`);
+    } catch(e) { 
+      // Offline fallback deletion
+      subjects = subjects.filter(s => s.id !== subjId);
+      delete studentsBySubject[subjId];
+      delete attendanceBySubject[subjId];
+      if (activeSubjId === subjId) activeSubjId = subjects[0]?.id || '';
+      saveLocalBackup();
+      renderAll();
+      renderDrawerSubjects();
+      updateNetworkBadge('offline', 'Local Delete Action');
+      showToast("✓ Deleted locally (Offline)");
+    }
+  }
+
+  // ---------- Attendance Roster Rendering (Secure DOM Construction) ----------
+  function renderRoster(){
+    const students = currentStudents();
+    const att = currentAttendance();
+    rosterEl.innerHTML = '';
+    
+    if (!activeSubjId) {
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'empty-state';
+      emptyDiv.textContent = 'No subject active. ';
+      
+      const actionBtn = document.createElement('button');
+      actionBtn.className = 'empty-state-btn';
+      actionBtn.textContent = 'Create your first subject';
+      actionBtn.id = 'emptyStateAddSubj';
+      actionBtn.addEventListener('click', triggerAddNewSubject);
+      
+      emptyDiv.appendChild(actionBtn);
+      rosterEl.appendChild(emptyDiv);
+      rosterHint.textContent = '';
+      updateSummary();
+      return;
+    }
+
+    if (students.length === 0){
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'empty-state';
+      
+      const line1 = document.createElement('span');
+      line1.textContent = 'No students in this subject yet.';
+      const line2 = document.createElement('span');
+      line2.style.fontSize = '12px';
+      line2.style.maxWidth = '280px';
+      line2.textContent = 'Add student names above or import multiple at once to start today\'s roster.';
+      
+      emptyDiv.appendChild(line1);
+      emptyDiv.appendChild(line2);
+      rosterEl.appendChild(emptyDiv);
+      rosterHint.textContent = '';
+      updateSummary();
+      return;
+    }
+    
+    const filteredStudents = students.filter(st => {
+      const status = att[today] ? (att[today][st.name] || null) : null;
+      if (rosterFilter === 'present' && status !== 'present') return false;
+      if (rosterFilter === 'absent' && status !== 'absent') return false;
+      return true;
+    });
+
+    if (filteredStudents.length === 0) {
+      const emptyFiltered = document.createElement('div');
+      emptyFiltered.className = 'empty-state';
+      emptyFiltered.style.padding = '24px 0';
+      emptyFiltered.textContent = `No students match the "${rosterFilter}" filter.`;
+      rosterEl.appendChild(emptyFiltered);
+    }
+
+    rosterHint.textContent = `(${filteredStudents.length}/${students.length})`;
+
+    filteredStudents.forEach(st => {
+      const status = att[today] ? (att[today][st.name] || null) : null;
+      
+      const row = document.createElement('div');
+      row.className = 'student-row';
+      
+      // Left Info Block
+      const nameCont = document.createElement('div');
+      nameCont.className = 'student-name';
+      
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'avatar';
+      avatarDiv.textContent = initials(st.name);
+      
+      const textSpan = document.createElement('span');
+      textSpan.textContent = st.name; // Safely assigned using textContent
+      
+      nameCont.appendChild(avatarDiv);
+      nameCont.appendChild(textSpan);
+      
+      // Actions/Status Buttons Row
+      const actionsGroup = document.createElement('div');
+      actionsGroup.className = 'toggle-group';
+      
+      const presBtn = document.createElement('button');
+      presBtn.className = 'toggle-btn present' + (status === 'present' ? ' active' : '');
+      presBtn.textContent = 'Present';
+      presBtn.addEventListener('click', () => {
+        const a = currentAttendance();
+        if (!a[today]) a[today] = {};
+        if (a[today][st.name] === 'present') {
+          delete a[today][st.name];
+        } else {
+          a[today][st.name] = 'present';
+        }
+        saveLocalBackup();
+        renderRoster();
+      });
+
+      const absBtn = document.createElement('button');
+      absBtn.className = 'toggle-btn absent' + (status === 'absent' ? ' active' : '');
+      absBtn.textContent = 'Absent';
+      absBtn.addEventListener('click', () => {
+        const a = currentAttendance();
+        if (!a[today]) a[today] = {};
+        if (a[today][st.name] === 'absent') {
+          delete a[today][st.name];
+        } else {
+          a[today][st.name] = 'absent';
+        }
+        saveLocalBackup();
+        renderRoster();
+      });
+
+      const deleteActionBtn = document.createElement('button');
+      deleteActionBtn.className = 'remove-btn';
+      deleteActionBtn.title = "Remove student";
+      deleteActionBtn.textContent = '✕';
+      deleteActionBtn.addEventListener('click', async () => {
+        const confirmed = await showConfirmModal(
+          "Remove Student", 
+          `Are you sure you want to delete ${st.name} from "${summarySubjName.textContent}"?`
+        );
+        if (!confirmed) return;
+
+        showToast('Removing student from cloud...');
+        updateNetworkBadge('pending');
+        try {
+          const res1 = await fetchWithTimeout(`${getApiUrl()}/student_name/${encodeURIComponent(st.name)}?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+          await fetchWithTimeout(`${getApiUrl()}/student_name/${encodeURIComponent(st.name)}?sheet=attendance&subject_id=${activeSubjId}`, { method: 'DELETE' });
+          
+          if (!res1.ok) { 
+            handleHttpError(res1, "Remove Student"); 
+            updateNetworkBadge('offline');
+            return; 
+          }
+          
+          studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== st.name);
+          const a = currentAttendance();
+          if (a[today]) delete a[today][st.name];
+          
+          saveLocalBackup();
+          updateNetworkBadge('online');
+          renderRoster();
+          showToast('Removed student successfully.');
+        } catch (e) { 
+          studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== st.name);
+          const a = currentAttendance();
+          if (a[today]) delete a[today][st.name];
+          saveLocalBackup();
+          updateNetworkBadge('offline', 'Local Remove Mode');
+          renderRoster();
+          showToast('Removed student locally (Offline).');
+        }
+      });
+
+      actionsGroup.appendChild(presBtn);
+      actionsGroup.appendChild(absBtn);
+      actionsGroup.appendChild(deleteActionBtn);
+      
+      row.appendChild(nameCont);
+      row.appendChild(actionsGroup);
+      
+      rosterEl.appendChild(row);
+    });
+
+    updateSummary();
+  }
+
+  // ---------- Metric Calculations ----------
+  function updateSummary(){
+    const students = currentStudents();
+    const att = currentAttendance();
+    const total = students.length;
+    let present = 0, absent = 0;
+    
+    students.forEach(s => {
+      if (att[today]) {
+        const st = att[today][s.name];
+        if (st === 'present') present++;
+        else if (st === 'absent') absent++;
+      }
+    });
+    
+    presentCountEl.textContent = present;
+    absentCountEl.textContent = absent;
+    totalCountEl.textContent = total;
+
+    const pct = total ? Math.round((present / total) * 100) : 0;
+    const circumference = 2 * Math.PI * 30;
+    const dash = (pct / 100) * circumference;
+    ringFg.setAttribute('stroke-dasharray', `${dash} ${circumference}`);
+    ringLabel.textContent = pct + '%';
+
+    const currentSubjObj = subjects.find(s => s.id === activeSubjId);
+    activeSubjectLabel.textContent = currentSubjObj ? currentSubjObj.name : 'No Active Subject';
+    summarySubjName.textContent = currentSubjObj ? currentSubjObj.name : '—';
+  }
+
+  // ---------- Student Record Input Normalization & Checks ----------
+  function cleanStudentName(rawName) {
+    // Trim extra spacing and enforce capitalized word formatting
+    return rawName.trim().replace(/\s+/g, ' ');
+  }
+
+  addBtn.addEventListener('click', async () => {
+    if (!activeSubjId) { showToast('Please select or create a subject first!'); return; }
+    let rawName = nameInput.value;
+    const name = cleanStudentName(rawName);
+    if (!name) return;
+    
+    // Roster Duplicate Checks
+    const students = currentStudents();
+    if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) { 
+      showToast('⚠️ Student is already in the class roster.'); 
+      return; 
+    }
+
+    showToast('Adding student...');
+    const currentSubjObj = subjects.find(s => s.id === activeSubjId);
+    updateNetworkBadge('pending');
+
+    try {
+      await fetchWithTimeout(`${getApiUrl()}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+      const res = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [{ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }] })
+      });
+      if (!res.ok) {
+        handleHttpError(res, "Add Student");
+        updateNetworkBadge('offline');
+        return;
+      }
+      students.push({ name });
+      nameInput.value = '';
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      renderRoster();
+      nameInput.focus();
+      showToast('Student added successfully!');
+    } catch (e) { 
+      students.push({ name });
+      nameInput.value = '';
+      saveLocalBackup();
+      updateNetworkBadge('offline', 'Offline Save Applied');
+      renderRoster();
+      showToast('✓ Added student locally (Offline)');
+    }
+  });
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
+
+  const tabSingle = document.getElementById('tabSingle');
+  const tabBulk = document.getElementById('tabBulk');
+  const singleAdd = document.getElementById('singleAdd');
+  const bulkAdd = document.getElementById('bulkAdd');
+  const bulkInput = document.getElementById('bulkInput');
+  const bulkPreview = document.getElementById('bulkPreview');
+  const bulkAddBtn = document.getElementById('bulkAddBtn');
+
+  tabSingle.addEventListener('click', () => {
+    tabSingle.classList.add('active'); tabBulk.classList.remove('active');
+    singleAdd.classList.remove('hidden'); bulkAdd.classList.add('hidden');
+  });
+  tabBulk.addEventListener('click', () => {
+    tabBulk.classList.add('active'); tabSingle.classList.remove('active');
+    bulkAdd.classList.remove('hidden'); singleAdd.classList.add('hidden');
+    bulkInput.focus();
+  });
+
+  function parseBulkNames(raw){ 
+    return raw.split(/[\n,]+/).map(s => cleanStudentName(s)).filter(Boolean); 
+  }
+  
+  function dedupeAgainstRoster(names){
+    const existing = new Set(currentStudents().map(s => s.name.toLowerCase()));
+    const seen = new Set(); 
+    const fresh = [];
+    names.forEach(n => {
+      const key = n.toLowerCase();
+      if (existing.has(key) || seen.has(key)) return;
+      seen.add(key); 
+      fresh.push(n);
+    });
+    return fresh;
+  }
+
+  bulkInput.addEventListener('input', () => {
+    if (!activeSubjId) { bulkPreview.textContent = 'Create/select a subject first.'; bulkAddBtn.disabled = true; return; }
+    const names = parseBulkNames(bulkInput.value);
+    const fresh = dedupeAgainstRoster(names);
+    const dupes = names.length - fresh.length;
+    
+    // Safe text formatting allocation
+    bulkPreview.textContent = '';
+    const strongTag = document.createElement('b');
+    strongTag.textContent = fresh.length;
+    bulkPreview.appendChild(strongTag);
+    bulkPreview.append(` new name${fresh.length === 1 ? '' : 's'} detected` + (dupes > 0 ? ` · ${dupes} skipped` : ''));
+    
+    bulkAddBtn.disabled = fresh.length === 0;
+  });
+
+  bulkAddBtn.addEventListener('click', async () => {
+    if (!activeSubjId) return;
+    const names = parseBulkNames(bulkInput.value);
+    const fresh = dedupeAgainstRoster(names);
+    if (fresh.length === 0) return;
+    
+    showToast("Bulk importing...");
+    const currentSubjObj = subjects.find(s => s.id === activeSubjId);
+    const rowsToSend = fresh.map(name => ({ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }));
+    updateNetworkBadge('pending');
+
+    try {
+      await fetchWithTimeout(`${getApiUrl()}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+      const res = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: rowsToSend })
+      });
+      if (!res.ok) {
+        handleHttpError(res, "Bulk Import Students");
+        updateNetworkBadge('offline');
+        return;
+      }
+      const students = currentStudents();
+      fresh.forEach(name => students.push({ name }));
+      bulkInput.value = '';
+      bulkPreview.textContent = '0 names detected';
+      bulkAddBtn.disabled = true;
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      renderRoster();
+      showToast(`Imported ${fresh.length} students successfully!`);
+    } catch(e) { 
+      const students = currentStudents();
+      fresh.forEach(name => students.push({ name }));
+      bulkInput.value = '';
+      bulkPreview.textContent = '0 names detected';
+      bulkAddBtn.disabled = true;
+      
+      saveLocalBackup();
+      updateNetworkBadge('offline', 'Local Multi-Import Applied');
+      renderRoster();
+      showToast(`✓ Imported ${fresh.length} students locally (Offline).`);
+    }
+  });
+
+  // ---------- ATTENDANCE SAVE TRANSACTION (Safely Prevent overwrites) ----------
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.addEventListener('click', async () => {
+    if (!activeSubjId) { showToast('Select a subject first!'); return; }
+
+    const students = currentStudents();
+    const att = currentAttendance()[today] || {};
+    const rowsToSend = [];
+    const selectedHour = document.getElementById('hourSelect').value;
+
+    students.forEach(student => {
+      const status = att[student.name];
+      if (status === 'present' || status === 'absent') { 
+        rowsToSend.push({
+          "subject_id": activeSubjId,
+          "date": today,
+          "hour": selectedHour,
+          "student_name": student.name,
+          "status": status
+        });
+      }
+    });
+
+    if (rowsToSend.length === 0) { 
+      showToast('No attendance marked to save!'); 
+      return; 
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    showToast('Saving to cloud...');
+    updateNetworkBadge('pending');
+
+    // Safe Update Strategy: First verify network connection, then attempt targeted overwrite
+    try {
+      // Clean up previous records for the subject/hour to avoid duplicate bloat
+      await fetchWithTimeout(`${getApiUrl()}/subject_id/${activeSubjId}?sheet=attendance&date=${today}&hour=${encodeURIComponent(selectedHour)}`, {
+        method: 'DELETE'
+      });
+
+      const response = await fetchWithTimeout(`${getApiUrl()}?sheet=attendance`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: rowsToSend })
+      });
+
+      if (response.ok) {
+        updateNetworkBadge('online');
+        showToast(`✓ Attendance Saved for ${selectedHour}!`);
+        if (tabDrawHist.classList.contains('active')) renderHistory();
+      } else {
+        await handleHttpError(response, "Save Attendance Block");
+      }
+    } catch (error) {
+      console.error(error);
+      // Offline fallback
+      saveLocalBackup();
+      updateNetworkBadge('offline', 'Draft Saved Locally');
+      showToast('⚠️ Network offline. Roster saved locally.');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '✓ Save Attendance';
+    }
+  });
+
+  // ---------- WHATSAPP AUTOMATION GENERATOR ----------
+  const whatsappBtn = document.getElementById('whatsappBtn');
+  whatsappBtn.addEventListener('click', () => {
+    if (!activeSubjId) {
+      showToast('Please select a subject first!');
+      return;
+    }
+    const currentSubj = subjects.find(s => s.id === activeSubjId);
+    const selectedHour = document.getElementById('hourSelect').value;
+    const students = currentStudents();
+    const att = currentAttendance()[today] || {};
+    
+    // Extract absentees
+    const absentees = students.filter(st => att[st.name] === 'absent').map(st => st.name);
+    
+    if (students.length === 0) {
+      showToast('Roster is empty.');
+      return;
+    }
+
+    const totalAbsenteesCount = absentees.length;
+    const formattedDate = formatDateLabel(today);
+
+    let messageText = `*🔴 ABSENTEES LIST 🔴*\n\n`;
+    messageText += `*Subject:* ${currentSubj ? currentSubj.name : "N/A"}\n`;
+    messageText += `*Period:* ${selectedHour}\n`;
+    messageText += `*Date:* ${formattedDate}\n\n`;
+    messageText += `*Total Absentees:* ${totalAbsenteesCount}\n\n`;
+    messageText += `*Absentees Names:*\n`;
+
+    if (totalAbsenteesCount === 0) {
+      messageText += `🎉 _All students are present!_`;
+    } else {
+      absentees.forEach((name, index) => {
+        messageText += `${index + 1}. ${name}\n`;
+      });
+    }
+
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`;
+    window.open(whatsappUrl, '_blank');
+    showToast('Redirecting to WhatsApp...');
+  });
+
+  // ---------- Drawer History (Secure programmatic rendering) ----------
+  const historyTabs = document.getElementById('historyTabs');
+  const historyPanel = document.getElementById('historyPanel');
+  let activeHistoryKey = null;
+
+  async function renderHistory(){
+    const keys = prevDateKeys(3); 
+    activeHistoryKey = activeHistoryKey && keys.includes(activeHistoryKey) ? activeHistoryKey : keys[0];
+
+    historyTabs.innerHTML = '';
+    
+    if (!activeSubjId) {
+      historyPanel.textContent = '';
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'history-empty';
+      emptyDiv.textContent = 'Please select a subject to load history.';
+      historyPanel.appendChild(emptyDiv);
+      return;
+    }
+
+    const currentSubj = subjects.find(s => s.id === activeSubjId);
+    document.getElementById('historyDrawerTitle').textContent = currentSubj ? `History - ${currentSubj.name}` : 'Attendance History';
+
+    keys.forEach(key => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (key === activeHistoryKey ? ' active' : '');
+      btn.textContent = formatDateLabel(key);
+      btn.addEventListener('click', () => { activeHistoryKey = key; renderHistory(); });
+      historyTabs.appendChild(btn);
+    });
+
+    historyPanel.innerHTML = '';
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'history-empty';
+    loadingDiv.textContent = 'Loading records...';
+    historyPanel.appendChild(loadingDiv);
+
+    try {
+      const response = await fetchWithTimeout(`${getApiUrl()}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      if (!response.ok) {
+        handleHttpError(response, "Render History Block");
+        return;
+      }
+      const data = await response.json();
+
+      historyPanel.innerHTML = '';
+
+      if (!data || data.length === 0 || data.error){
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'history-empty';
+        emptyDiv.textContent = `No attendance logged on ${formatDateLabel(activeHistoryKey)}.`;
+        historyPanel.appendChild(emptyDiv);
+        return;
+      }
+
+      // Group hour blocks safely
+      const groupedByHour = {};
+      data.forEach(row => {
+        const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+        if (rowDateKey === activeHistoryKey) {
+          const hr = row.hour || "Hour 1";
+          if (!groupedByHour[hr]) groupedByHour[hr] = [];
+          groupedByHour[hr].push(row);
+        }
+      });
+
+      const hourKeys = Object.keys(groupedByHour).sort();
+      if (hourKeys.length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'history-empty';
+        emptyDiv.textContent = `No attendance logged on ${formatDateLabel(activeHistoryKey)}.`;
+        historyPanel.appendChild(emptyDiv);
+        return;
+      }
+
+      hourKeys.forEach(hr => {
+        const hourData = groupedByHour[hr];
+        const presentNames = hourData.filter(row => row.status === 'present').map(row => row.student_name);
+        const absentNames = hourData.filter(row => row.status === 'absent').map(row => row.student_name);
+
+        const section = document.createElement('div');
+        section.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
+        section.style.padding = '12px 8px';
+
+        // Title Element
+        const titleDiv = document.createElement('div');
+        titleDiv.style.fontWeight = '700';
+        titleDiv.style.color = 'var(--accent)';
+        titleDiv.style.marginBottom = '6px';
+        titleDiv.style.fontSize = '13.5px';
+        titleDiv.style.fontFamily = "'Space Grotesk', sans-serif";
+        titleDiv.textContent = `⚡ ${hr}`;
+
+        // Summary Metric Row
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'history-summary';
+        summaryDiv.style.margin = '0 0 10px 0';
+        summaryDiv.style.fontSize = '11px';
+        
+        const presCountContainer = document.createElement('div');
+        presCountContainer.className = 'count';
+        presCountContainer.innerHTML = `<span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present`;
+        
+        const absCountContainer = document.createElement('div');
+        absCountContainer.className = 'count';
+        absCountContainer.innerHTML = `<span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent`;
+        
+        summaryDiv.appendChild(presCountContainer);
+        summaryDiv.appendChild(absCountContainer);
+
+        // Copy Actions Row
+        const actionsDiv = document.createElement('div');
+        actionsDiv.style.display = 'flex';
+        actionsDiv.style.gap = '8px';
+        actionsDiv.style.marginBottom = '10px';
+
+        const copyPresBtn = document.createElement('button');
+        copyPresBtn.className = 'filter-btn copy-btn';
+        copyPresBtn.style.fontSize = '10px';
+        copyPresBtn.style.padding = '4px 8px';
+        copyPresBtn.textContent = '📋 Copy Present';
+        copyPresBtn.addEventListener('click', async () => {
+          if (!presentNames.length) return showToast('No present names');
+          await copyToClipboard(presentNames.join('\n'));
+          showToast(`Copied ${presentNames.length} names`);
+        });
+
+        const copyAbsBtn = document.createElement('button');
+        copyAbsBtn.className = 'filter-btn copy-btn';
+        copyAbsBtn.style.fontSize = '10px';
+        copyAbsBtn.style.padding = '4px 8px';
+        copyAbsBtn.textContent = '📋 Copy Absent';
+        copyAbsBtn.addEventListener('click', async () => {
+          if (!absentNames.length) return showToast('No absent names');
+          await copyToClipboard(absentNames.join('\n'));
+          showToast(`Copied ${absentNames.length} names`);
+        });
+
+        actionsDiv.appendChild(copyPresBtn);
+        actionsDiv.appendChild(copyAbsBtn);
+
+        // Scrollable List
+        const listEl = document.createElement('div');
+        listEl.className = 'history-list';
+        listEl.style.margin = '0';
+        listEl.style.maxHeight = '150px';
+        listEl.style.overflowY = 'auto';
+        listEl.style.gap = '4px';
+
+        [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
+          const item = document.createElement('div');
+          item.className = 'history-item';
+          item.style.fontSize = '12px';
+          
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = name;
+          
+          const tagSpan = document.createElement('span');
+          tagSpan.className = `status-tag ${status}`;
+          tagSpan.textContent = status.toUpperCase();
+          
+          item.appendChild(nameSpan);
+          item.appendChild(tagSpan);
+          listEl.appendChild(item);
+        });
+
+        section.appendChild(titleDiv);
+        section.appendChild(summaryDiv);
+        section.appendChild(actionsDiv);
+        section.appendChild(listEl);
+        historyPanel.appendChild(section);
+      });
+
+    } catch (error) {
+      console.error(error);
+      historyPanel.innerHTML = '';
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'history-empty';
+      errorDiv.style.color = 'var(--absent)';
+      errorDiv.textContent = 'Failed to load history records.';
+      historyPanel.appendChild(errorDiv);
+    }
+  }
+
+  function renderAll(){
+    renderRoster();
+    activeHistoryKey = null;
+    if(tabDrawHist.classList.contains('active')) renderHistory();
+  }
+  
+  // App Entry Init
+  initializeAppFromCloud();
+</script>
+</body>
+</html>
+
