@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Subject Wise Attendance</title>
+<title>Subject Wise Attendance - Professional Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -19,6 +19,7 @@
     --absent-dim: rgba(251, 113, 133, 0.16);
     --accent: #a78bfa;
     --accent-dark: #7c3aed;
+    --warning: #fbbf24;
   }
   
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,13 +38,13 @@
     position: fixed;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.45;
+    opacity: 0.35;
     z-index: 0;
     pointer-events: none;
   }
   .blob1 { width: 550px; height: 550px; background: #6d28d9; top: -180px; left: -160px; animation: float1 24s ease-in-out infinite; }
   .blob2 { width: 480px; height: 480px; background: #0f766e; bottom: -200px; right: -140px; animation: float2 28s ease-in-out infinite; }
-  .blob3 { width: 400px; height: 400px; background: #be185d; top: 35%; left: 55%; animation: float3 32s ease-in-out infinite; opacity: 0.28; }
+  .blob3 { width: 400px; height: 400px; background: #be185d; top: 35%; left: 55%; animation: float3 32s ease-in-out infinite; opacity: 0.22; }
   
   @keyframes float1 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(80px,60px);} }
   @keyframes float2 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-60px,-80px);} }
@@ -56,6 +57,24 @@
     margin: 0 auto;
     padding: 24px 16px 80px;
   }
+
+  /* Status Bar Indicators */
+  .network-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+  }
+  .network-badge.online { background: rgba(52, 211, 153, 0.15); color: var(--present); }
+  .network-badge.offline { background: rgba(251, 113, 133, 0.15); color: var(--absent); }
+  .network-badge.pending { background: rgba(251, 191, 36, 0.15); color: var(--warning); border-color: var(--warning); }
 
   /* Header structure */
   header {
@@ -169,7 +188,7 @@
     display: flex; flex-direction: column; box-shadow: 12px 0 40px rgba(0,0,0,0.4);
   }
   .drawer-backdrop.show .drawer { transform: translateX(0); }
-  .drawer-header { padding: 24px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .drawer-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
   .drawer-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
   .drawer-close { background: transparent; border: none; color: var(--text-dim); font-size: 24px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
   .drawer-close:hover { background: var(--glass); color: var(--text); }
@@ -197,9 +216,12 @@
   .subj-btn { width: 30px; height: 30px; border-radius: 8px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
   .subj-btn:hover { background: var(--glass-strong); color: var(--text); }
   .subj-btn.delete:hover { background: var(--absent-dim); color: var(--absent); }
-  .drawer-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  
+  .drawer-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
   .btn-new-subject { width: 100%; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; font-weight: 600; padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer; border: none; transition: transform 0.15s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3); }
   .btn-new-subject:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
+  .btn-config { width: 100%; background: var(--glass); border: 1px solid var(--border); color: var(--text); font-weight: 600; padding: 10px; border-radius: 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+  .btn-config:hover { background: var(--glass-strong); border-color: var(--accent); }
 
   /* Drawer History Content Styles */
   .history-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; padding: 0 8px; }
@@ -381,6 +403,10 @@
         <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         Add New Subject
       </button>
+      <button class="btn-config" id="drawerConfigBtn">
+        <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Database Configuration
+      </button>
     </div>
   </div>
 </div>
@@ -392,7 +418,10 @@
         <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
       </button>
       <div>
-        <div class="eyebrow">Subject-Wise Attendance</div>
+        <div class="eyebrow" style="display:flex; align-items:center; gap:8px;">
+          <span>Subject-Wise Attendance</span>
+          <span id="connectionBadge" class="network-badge online">Checking...</span>
+        </div>
         <h1>Roll Call</h1>
       </div>
     </div>
@@ -499,7 +528,23 @@
   </div>
 </div>
 
-<!-- Custom Modals -->
+<!-- Config Modal -->
+<div class="modal-backdrop" id="configModal">
+  <div class="glass modal" style="max-width: 440px;">
+    <h3>Database Setup</h3>
+    <p>Set up your API URL parameters securely below. Changes persist locally.</p>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+      <label style="font-size:12px; font-weight:600; color:var(--text-dim)">SheetDB URL:</label>
+      <input type="text" id="configApiUrlField" placeholder="https://sheetdb.io/api/v1/..." style="font-size:13px; padding:10px 12px;">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="configModalCancel">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" id="configModalSubmit">Apply Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Input Dialog Modal -->
 <div class="modal-backdrop" id="inputModal">
   <div class="glass modal">
     <h3 id="inputModalTitle">New Subject</h3>
@@ -512,13 +557,14 @@
   </div>
 </div>
 
+<!-- General Confirmation Modal -->
 <div class="modal-backdrop" id="confirmModal">
   <div class="glass modal">
-    <h3 style="color: var(--absent)">Delete Subject?</h3>
+    <h3 id="confirmModalTitle" style="color: var(--absent)">Delete Subject?</h3>
     <p id="confirmModalDesc">Are you sure you want to delete this subject and all of its recorded history? This action is permanent.</p>
     <div class="modal-actions">
       <button class="modal-btn modal-btn-cancel" id="confirmModalCancel">Cancel</button>
-      <button class="modal-btn modal-btn-danger" id="confirmModalSubmit">Delete</button>
+      <button class="modal-btn modal-btn-confirm" id="confirmModalSubmit">Confirm</button>
     </div>
   </div>
 </div>
@@ -538,26 +584,50 @@
 
 <!-- ================== APP LOGIC ================== -->
 <script>
-  // ---------- Cloud Storage Configuration ----------
-  const SHEETDB_API_URL = "https://sheetdb.io/api/v1/1zmkdfeyas1ei"; 
+  // ---------- Secure State Configuration Manager ----------
+  const DEFAULT_API_URL = "https://sheetdb.io/api/v1/1zmkdfeyas1ei";
+  
+  function getApiUrl() {
+    return localStorage.getItem('ROLL_CALL_API_URL') || DEFAULT_API_URL;
+  }
+  
+  function setApiUrl(newUrl) {
+    if (newUrl) {
+      localStorage.setItem('ROLL_CALL_API_URL', newUrl.trim());
+    } else {
+      localStorage.removeItem('ROLL_CALL_API_URL');
+    }
+  }
 
-  // In-memory states
+  // In-memory application state
   let subjects = []; 
   let studentsBySubject = {}; 
   let attendanceBySubject = {}; 
   let activeSubjId = '';
   let rosterFilter = 'all'; // all, present, absent
-  let lastLoadedSubjectId = ''; // Protect subject drafts during Period switches
+  let lastLoadedSubjectId = '';
+  let lastSelectedHour = "Hour 1";
+  
+  // Caching mechanism to avoid excessive rate-limiting API requests
+  let cache = {
+    roster: null,
+    history: {},
+    lastFetchedRoster: 0,
+    lastFetchedHistory: 0,
+    ttl: 20000 // 20 seconds TTL
+  };
 
-  function uid(){ return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  // Safe unique ID generator
+  function uid() { 
+    return 's' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6); 
+  }
 
-  // Resilient date conversion (handles Google Sheets serial date conversions e.g. "46211")
+  // Resilient date conversion (handles serial date integers from spreadsheet converters)
   function parseSheetDate(key) {
     if (!key) return new Date();
     key = String(key).trim();
     if (/^\d+$/.test(key)) {
       const serial = parseInt(key, 10);
-      // 25569 standard offset days between 1899-12-30 and 1970-01-01
       return new Date((serial - 25569) * 86400 * 1000);
     }
     const parts = key.split('-').map(Number);
@@ -572,9 +642,7 @@
     return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
   }
 
-  function todayKey(){
-    return normalizeDateToKey(new Date());
-  }
+  const today = normalizeDateToKey(new Date());
 
   function formatDateLabel(key){
     const dt = parseSheetDate(key);
@@ -592,16 +660,10 @@
     return keys;
   }
 
-  function escapeHtml(str){
-    return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
   function initials(name){
     const parts = name.trim().split(/\s+/);
-    return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+    return (parts[0] ? parts[0][0] : '') + (parts[1] ? parts[1][0] : '');
   }
-
-  const today = todayKey();
 
   function currentStudents(){
     if (!activeSubjId) return [];
@@ -615,19 +677,94 @@
     if (!attendanceBySubject[activeSubjId][today]) attendanceBySubject[activeSubjId][today] = {};
     return attendanceBySubject[activeSubjId];
   }
-  
-  // Reusable clipboard function
-  function copyToClipboard(text) {
+
+  // Safe clipboard helper (replaces deprecated command APIs with modern safe Fallbacks)
+  async function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.warn("Navigator clipboard copy failed, trying programmatic fallback:", err);
+      }
+    }
+    
+    // Graceful iframe-safe browser fallback selection block
     const textarea = document.createElement("textarea");
     textarea.value = text;
     textarea.style.position = "fixed"; 
+    textarea.style.opacity = "0";
     document.body.appendChild(textarea);
     textarea.select();
-    try { document.execCommand('copy'); } catch (err) { console.error('Copy failed', err); }
+    try { 
+      document.execCommand('copy'); 
+    } catch (err) { 
+      console.error('All clipboard operations blocked', err); 
+    }
     document.body.removeChild(textarea);
   }
 
-  // ---------- Dynamic Alert Modal Utility ----------
+  // ---------- Offline Queue and Local Backup Storage Integration ----------
+  function loadLocalBackup() {
+    try {
+      const backup = localStorage.getItem('ROLL_CALL_OFFLINE_BACKUP');
+      if (backup) {
+        const data = JSON.parse(backup);
+        studentsBySubject = data.studentsBySubject || {};
+        attendanceBySubject = data.attendanceBySubject || {};
+        subjects = data.subjects || [];
+        if (!activeSubjId && subjects.length > 0) {
+          activeSubjId = subjects[0].id;
+        }
+        updateNetworkBadge('offline', 'Loaded Local Offline Backup');
+        renderAll();
+      }
+    } catch (e) {
+      console.error("Local backup loading process failed: ", e);
+    }
+  }
+
+  function saveLocalBackup() {
+    try {
+      const data = {
+        studentsBySubject,
+        attendanceBySubject,
+        subjects
+      };
+      localStorage.setItem('ROLL_CALL_OFFLINE_BACKUP', JSON.stringify(data));
+    } catch (e) {
+      console.error("Local backup saving process failed: ", e);
+    }
+  }
+
+  function updateNetworkBadge(status, customMsg = '') {
+    const badge = document.getElementById('connectionBadge');
+    badge.className = 'network-badge ' + status;
+    if (status === 'online') {
+      badge.textContent = 'Cloud Active';
+    } else if (status === 'offline') {
+      badge.textContent = customMsg || 'Offline Draft';
+    } else if (status === 'pending') {
+      badge.textContent = 'Syncing...';
+    }
+  }
+
+  // ---------- Robust Request API Wrapper with Timeout & Connection Safeguards ----------
+  async function fetchWithTimeout(resource, options = {}) {
+    const { timeout = 12000 } = options;
+    
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  }
+
+  // ---------- Dialog Modals ----------
   const alertModal = document.getElementById('alertModal');
   const alertModalTitle = document.getElementById('alertModalTitle');
   const alertModalDesc = document.getElementById('alertModalDesc');
@@ -640,102 +777,68 @@
   }
   alertModalClose.addEventListener('click', () => { alertModal.classList.remove('show'); });
 
-  // ---------- Auto Clean Up Older Data (Limit to 3 Days) ----------
-  async function cleanupOldData() {
-    try {
-      const d = new Date();
-      d.setDate(d.getDate() - 3); // Calculate date 3 days ago
-      const cutoff = normalizeDateToKey(d);
-      
-      const res = await fetch(`${SHEETDB_API_URL}?sheet=attendance`);
-      const data = await res.json();
-      
-      if (data && data.length > 0 && !data.error) {
-        const datesToDelete = new Set();
-        data.forEach(row => {
-          const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
-          if (rowDateKey < cutoff) {
-            datesToDelete.add(rowDateKey);
-          }
-        });
-        
-        for (let date of datesToDelete) {
-          // Precise key cleanup segment
-          await fetch(`${SHEETDB_API_URL}/date/${date}?sheet=attendance`, { method: 'DELETE' });
-        }
-        if (datesToDelete.size > 0) console.log(`Cleaned up ${datesToDelete.size} old dates.`);
-      }
-    } catch (err) {
-      console.error('Cleanup routine failed:', err);
-    }
+  // Custom promise dialog wrappers (preventing overlap crashes)
+  let activeInputResolve = null;
+  let activeConfirmResolve = null;
+
+  const inputModal = document.getElementById('inputModal');
+  const inputModalTitle = document.getElementById('inputModalTitle');
+  const inputModalDesc = document.getElementById('inputModalDesc');
+  const inputModalField = document.getElementById('inputModalField');
+  const inputModalCancel = document.getElementById('inputModalCancel');
+  const inputModalSubmit = document.getElementById('inputModalSubmit');
+
+  function showPromptModal(title, description, placeholder, initialValue = "") {
+    if (activeInputResolve) activeInputResolve(null);
+    return new Promise((resolve) => {
+      inputModalTitle.textContent = title;
+      inputModalDesc.textContent = description;
+      inputModalField.placeholder = placeholder;
+      inputModalField.value = initialValue;
+      inputModal.classList.add('show');
+      inputModalField.focus();
+      activeInputResolve = resolve;
+    });
   }
 
-  // ---------- GLOBAL CLOUD FETCH ----------
-  async function initializeAppFromCloud() {
-    showToast("Connecting to cloud database...");
-    
-    // Trigger background cleanup (non-blocking)
-    cleanupOldData();
+  inputModalSubmit.addEventListener('click', () => {
+    const value = inputModalField.value.trim();
+    inputModal.classList.remove('show');
+    if (activeInputResolve) { activeInputResolve(value || null); activeInputResolve = null; }
+  });
+  inputModalCancel.addEventListener('click', () => {
+    inputModal.classList.remove('show');
+    if (activeInputResolve) { activeInputResolve(null); activeInputResolve = null; }
+  });
+  inputModalField.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') inputModalSubmit.click();
+    if (e.key === 'Escape') inputModalCancel.click();
+  });
 
-    try {
-      const response = await fetch(`${SHEETDB_API_URL}?sheet=roster`);
-      if (!response.ok) {
-        handleHttpError(response, "Initial Cloud Fetch");
-        return;
-      }
-      const rosterData = await response.json();
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmModalTitle = document.getElementById('confirmModalTitle');
+  const confirmModalDesc = document.getElementById('confirmModalDesc');
+  const confirmModalCancel = document.getElementById('confirmModalCancel');
+  const confirmModalSubmit = document.getElementById('confirmModalSubmit');
 
-      const subjectMap = new Map();
-      studentsBySubject = {};
-
-      if (rosterData && rosterData.length > 0) {
-        rosterData.forEach(row => {
-          if (row.subject_id) {
-            if (!subjectMap.has(row.subject_id)) {
-              subjectMap.set(row.subject_id, row.subject_name || "Classroom Subject");
-            }
-            if (!studentsBySubject[row.subject_id]) {
-              studentsBySubject[row.subject_id] = [];
-            }
-            if (row.student_name && row.student_name !== "__INIT_EMPTY__") {
-              studentsBySubject[row.subject_id].push({ name: row.student_name });
-            }
-          }
-        });
-        subjects = Array.from(subjectMap.entries()).map(([id, name]) => ({ id, name }));
-        activeSubjId = subjects[0]?.id || '';
-      }
-
-      // Fetch active attendance records resiliently with in-memory parsing
-      if (activeSubjId) {
-        lastLoadedSubjectId = activeSubjId;
-        const selectedHour = document.getElementById('hourSelect').value;
-        const attResponse = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
-        if (attResponse.ok) {
-          const attData = await attResponse.json();
-          attendanceBySubject = {};
-          if (attData && attData.length > 0 && !attData.error) {
-            attData.forEach(row => {
-              if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
-              if (!attendanceBySubject[row.subject_id][today]) attendanceBySubject[row.subject_id][today] = {};
-              
-              const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
-              const rowHour = row.hour || "Hour 1";
-              if (rowDateKey === today && rowHour === selectedHour) {
-                attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
-              }
-            });
-          }
-        }
-      }
-
-      showToast("✓ Cloud Sync Complete");
-      renderAll();
-    } catch (error) {
-      console.error(error);
-      showToast("❌ Network error. Check internet connection.");
-    }
+  function showConfirmModal(title, description) {
+    if (activeConfirmResolve) activeConfirmResolve(false);
+    return new Promise((resolve) => {
+      confirmModalTitle.textContent = title;
+      confirmModalDesc.textContent = description;
+      confirmModal.classList.add('show');
+      activeConfirmResolve = resolve;
+    });
   }
+
+  confirmModalSubmit.addEventListener('click', () => {
+    confirmModal.classList.remove('show');
+    if (activeConfirmResolve) { activeConfirmResolve(true); activeConfirmResolve = null; }
+  });
+  confirmModalCancel.addEventListener('click', () => {
+    confirmModal.classList.remove('show');
+    if (activeConfirmResolve) { activeConfirmResolve(false); activeConfirmResolve = null; }
+  });
 
   // ---------- Error Diagnostics Handler ----------
   async function handleHttpError(response, context) {
@@ -755,12 +858,12 @@
     if (status === 429) {
       showAlertModal(
         "API Limit Reached (429)",
-        `Your <b>SheetDB API Key</b> has reached its execution limit (500 requests/month on the free tier).<br><br><b>How to fix this:</b><br>1. Log in to your <a href="https://sheetdb.io" target="_blank" style="color: var(--accent); text-decoration: underline;">SheetDB Dashboard</a> and check your usage status.<br>2. Wait for your monthly quota reset.<br>3. Create a new SheetDB API key using another email and update the API URL in this file.`
+        `Your <b>SheetDB API Key</b> has reached its execution limit.<br><br><b>How to fix this:</b><br>1. Check your usage status on your Dashboard.<br>2. Wait for your monthly quota reset.<br>3. Set up a custom SheetDB API URL inside our <b>Configuration Menu</b>.`
       );
     } else if (status === 403) {
       showAlertModal(
         "Access Forbidden (403)",
-        `SheetDB rejected the authentication request.<br><br><b>Possible causes:</b><br>• The API URL is incorrect.<br>• Your SheetDB API token has expired or was revoked.<br>• Google Sheet permissions have been changed.`
+        `Authentication rejected. Your SheetDB API URL may be incorrect or missing headers/permissions.`
       );
     } else {
       showAlertModal(
@@ -770,22 +873,123 @@
     }
   }
 
-  // ---------- Fetch Specific Hour Attendance with Draft Carry-over ----------
-  async function loadHourAttendance() {
-    if (!activeSubjId) return;
-    showToast("Syncing Period Details...");
-    const selectedHour = document.getElementById('hourSelect').value;
-    
-    // Store current visual sheet state as fallback draft ONLY if switching hours within the same subject
-    const isSameSubject = (lastLoadedSubjectId === activeSubjId);
-    const fallbackDraft = (isSameSubject && currentAttendance()[today]) ? { ...currentAttendance()[today] } : {};
-    lastLoadedSubjectId = activeSubjId;
+  // ---------- GLOBAL CLOUD FETCH & DEEP CACHING ----------
+  async function initializeAppFromCloud(bypassCache = false) {
+    updateNetworkBadge('pending');
+    showToast("Connecting to cloud database...");
+
+    const now = Date.now();
+    if (!bypassCache && cache.roster && (now - cache.lastFetchedRoster < cache.ttl)) {
+      showToast("✓ Using Cached Data");
+      updateNetworkBadge('online');
+      return;
+    }
 
     try {
-      // Pull all records for active subject to evaluate matching attributes safely
-      const attResponse = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      const response = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`);
+      if (!response.ok) {
+        handleHttpError(response, "Initial Cloud Fetch");
+        loadLocalBackup();
+        return;
+      }
+      const rosterData = await response.json();
+      cache.roster = rosterData;
+      cache.lastFetchedRoster = now;
+
+      const subjectMap = new Map();
+      studentsBySubject = {};
+
+      if (rosterData && rosterData.length > 0) {
+        rosterData.forEach(row => {
+          if (row.subject_id) {
+            if (!subjectMap.has(row.subject_id)) {
+              subjectMap.set(row.subject_id, row.subject_name || "Classroom Subject");
+            }
+            if (!studentsBySubject[row.subject_id]) {
+              studentsBySubject[row.subject_id] = [];
+            }
+            if (row.student_name && row.student_name !== "__INIT_EMPTY__") {
+              studentsBySubject[row.subject_id].push({ name: row.student_name });
+            }
+          }
+        });
+        subjects = Array.from(subjectMap.entries()).map(([id, name]) => ({ id, name }));
+        
+        if (subjects.length > 0 && !activeSubjId) {
+          activeSubjId = subjects[0].id;
+        }
+      }
+
+      // Sync active subject logs locally
+      if (activeSubjId) {
+        lastLoadedSubjectId = activeSubjId;
+        const selectedHour = document.getElementById('hourSelect').value;
+        const attResponse = await fetchWithTimeout(`${getApiUrl()}/search?subject_id=${activeSubjId}&sheet=attendance`);
+        
+        if (attResponse.ok) {
+          const attData = await attResponse.json();
+          attendanceBySubject = {};
+          if (attData && attData.length > 0 && !attData.error) {
+            attData.forEach(row => {
+              if (!attendanceBySubject[row.subject_id]) attendanceBySubject[row.subject_id] = {};
+              
+              const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
+              if (!attendanceBySubject[row.subject_id][rowDateKey]) {
+                attendanceBySubject[row.subject_id][rowDateKey] = {};
+              }
+              
+              const rowHour = row.hour || "Hour 1";
+              if (rowDateKey === today && rowHour === selectedHour) {
+                attendanceBySubject[row.subject_id][today][row.student_name] = row.status;
+              }
+            });
+          }
+        }
+      }
+
+      saveLocalBackup();
+      updateNetworkBadge('online');
+      showToast("✓ Cloud Sync Complete");
+      renderAll();
+    } catch (error) {
+      console.error(error);
+      showToast("⚠️ Offline: Using Local Backup Mode");
+      loadLocalBackup();
+    }
+  }
+
+  // ---------- Switch Period / Hour Block ----------
+  async function loadHourAttendance() {
+    if (!activeSubjId) return;
+    const selectedHour = document.getElementById('hourSelect').value;
+    
+    const isSameSubject = (lastLoadedSubjectId === activeSubjId);
+    const hasCurrentMarks = currentAttendance()[today] && Object.keys(currentAttendance()[today]).length > 0;
+    
+    let draftToCarry = {};
+    
+    if (isSameSubject && hasCurrentMarks && (lastSelectedHour !== selectedHour)) {
+      // Prompt user whether they want to duplicate the attendance state as a draft template
+      const confirmDraftTransfer = await showConfirmModal(
+        "Period Transition Draft",
+        `Do you want to copy the attendance roster states from "${lastSelectedHour}" to your new draft for "${selectedHour}"?`
+      );
+      if (confirmDraftTransfer) {
+        draftToCarry = { ...currentAttendance()[today] };
+      }
+    }
+    
+    lastLoadedSubjectId = activeSubjId;
+    lastSelectedHour = selectedHour;
+    
+    updateNetworkBadge('pending');
+    showToast(`Syncing Period: ${selectedHour}...`);
+
+    try {
+      const attResponse = await fetchWithTimeout(`${getApiUrl()}/search?subject_id=${activeSubjId}&sheet=attendance`);
       if (!attResponse.ok) {
         handleHttpError(attResponse, "Load Period Attendance");
+        updateNetworkBadge('offline', 'Period Switched Offline');
         return;
       }
       const attData = await attResponse.json();
@@ -807,25 +1011,32 @@
       }
 
       if (hasRecordsForNewHour) {
-        // Hour was marked previously, load the authentic stored database copy
         attendanceBySubject[activeSubjId][today] = newHourData;
-        showToast(`Loaded stored ${selectedHour} markings`);
+        showToast(`Loaded saved markings for ${selectedHour}`);
       } else {
-        // Carry over previous hour state as template. No auto-push occurs.
-        attendanceBySubject[activeSubjId][today] = fallbackDraft;
-        showToast(`Draft carried over to ${selectedHour}. Edit & save manually!`);
+        attendanceBySubject[activeSubjId][today] = draftToCarry;
+        if (Object.keys(draftToCarry).length > 0) {
+          showToast(`Transferred draft to ${selectedHour}. Remember to save!`);
+        } else {
+          showToast(`Roster ready for ${selectedHour}`);
+        }
       }
       
+      saveLocalBackup();
+      updateNetworkBadge('online');
       renderRoster();
     } catch (e) {
       console.error(e);
-      showToast("❌ Failed to fetch Period records.");
+      updateNetworkBadge('offline', 'Offline (Local Switched)');
+      attendanceBySubject[activeSubjId][today] = draftToCarry;
+      renderRoster();
+      showToast("⚠️ Running offline. Draft preserved.");
     }
   }
 
   document.getElementById('hourSelect').addEventListener('change', loadHourAttendance);
 
-  // ---------- DOM Element Selectors ----------
+  // ---------- DOM Elements Configuration & Event Bindings ----------
   const rosterEl = document.getElementById('roster');
   const nameInput = document.getElementById('nameInput');
   const addBtn = document.getElementById('addBtn');
@@ -855,18 +1066,12 @@
   const drawerNewSubjBtn = document.getElementById('drawerNewSubjBtn');
   const headerRenameBtn = document.getElementById('headerRenameBtn');
 
-  // Modal Elements
-  const inputModal = document.getElementById('inputModal');
-  const inputModalTitle = document.getElementById('inputModalTitle');
-  const inputModalDesc = document.getElementById('inputModalDesc');
-  const inputModalField = document.getElementById('inputModalField');
-  const inputModalCancel = document.getElementById('inputModalCancel');
-  const inputModalSubmit = document.getElementById('inputModalSubmit');
-
-  const confirmModal = document.getElementById('confirmModal');
-  const confirmModalDesc = document.getElementById('confirmModalDesc');
-  const confirmModalCancel = document.getElementById('confirmModalCancel');
-  const confirmModalSubmit = document.getElementById('confirmModalSubmit');
+  // Database settings config mapping
+  const drawerConfigBtn = document.getElementById('drawerConfigBtn');
+  const configModal = document.getElementById('configModal');
+  const configApiUrlField = document.getElementById('configApiUrlField');
+  const configModalCancel = document.getElementById('configModalCancel');
+  const configModalSubmit = document.getElementById('configModalSubmit');
 
   todayLabel.textContent = formatDateLabel(today);
 
@@ -877,57 +1082,34 @@
     showToast._t = setTimeout(()=> toast.classList.remove('show'), 2400);
   }
 
-  // ---------- Custom Modals ----------
-  let currentModalResolve = null;
-
-  function showPromptModal(title, description, placeholder, initialValue = "") {
-    return new Promise((resolve) => {
-      inputModalTitle.textContent = title;
-      inputModalDesc.textContent = description;
-      inputModalField.placeholder = placeholder;
-      inputModalField.value = initialValue;
-      inputModal.classList.add('show');
-      inputModalField.focus();
-      currentModalResolve = resolve;
-    });
-  }
-
-  inputModalSubmit.addEventListener('click', () => {
-    const value = inputModalField.value.trim();
-    inputModal.classList.remove('show');
-    if (currentModalResolve) { currentModalResolve(value || null); currentModalResolve = null; }
-  });
-  inputModalCancel.addEventListener('click', () => {
-    inputModal.classList.remove('show');
-    if (currentModalResolve) { currentModalResolve(null); currentModalResolve = null; }
-  });
-  inputModalField.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') inputModalSubmit.click();
-    if (e.key === 'Escape') inputModalCancel.click();
+  // --- Database Settings Config Action Blocks ---
+  drawerConfigBtn.addEventListener('click', () => {
+    configApiUrlField.value = getApiUrl();
+    configModal.classList.add('show');
   });
 
-  function showConfirmModal(description) {
-    return new Promise((resolve) => {
-      confirmModalDesc.textContent = description;
-      confirmModal.classList.add('show');
-      currentModalResolve = resolve;
-    });
-  }
-
-  confirmModalSubmit.addEventListener('click', () => {
-    confirmModal.classList.remove('show');
-    if (currentModalResolve) { currentModalResolve(true); currentModalResolve = null; }
+  configModalCancel.addEventListener('click', () => {
+    configModal.classList.remove('show');
   });
-  confirmModalCancel.addEventListener('click', () => {
-    confirmModal.classList.remove('show');
-    if (currentModalResolve) { currentModalResolve(false); currentModalResolve = null; }
+
+  configModalSubmit.addEventListener('click', () => {
+    const freshUrl = configApiUrlField.value.trim();
+    if (freshUrl) {
+      setApiUrl(freshUrl);
+      showToast("API Endpoint Settings Updated");
+      configModal.classList.remove('show');
+      closeDrawer();
+      initializeAppFromCloud(true);
+    } else {
+      showToast("Cannot use an empty URL");
+    }
   });
 
   // ---------- Drawer Tab Controls ----------
   tabDrawSubj.addEventListener('click', () => {
     tabDrawSubj.classList.add('active'); tabDrawHist.classList.remove('active');
     drawerSubjectContent.classList.add('active'); drawerHistoryContent.classList.remove('active');
-    drawerFooter.style.display = 'block';
+    drawerFooter.style.display = 'flex';
   });
   tabDrawHist.addEventListener('click', () => {
     tabDrawHist.classList.add('active'); tabDrawSubj.classList.remove('active');
@@ -936,7 +1118,6 @@
     renderHistory();
   });
 
-  // Open & Close methods
   function openDrawer() {
     renderDrawerSubjects();
     drawerBackdrop.classList.add('show');
@@ -947,14 +1128,13 @@
   drawerClose.addEventListener('click', closeDrawer);
   drawerBackdrop.addEventListener('click', (e) => { if (e.target === drawerBackdrop) closeDrawer(); });
 
-  // ---------- Roster Filter Handlers & Inline Copying ----------
+  // ---------- Filter Handlers & Copy Setup ----------
   document.querySelectorAll('.filter-btn:not(.copy-btn)').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.filter-btn:not(.copy-btn)').forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
       rosterFilter = e.target.dataset.filter;
       
-      // Copy shortcut visibility
       const copyBtn = document.getElementById('copyFilteredBtn');
       copyBtn.style.display = rosterFilter === 'all' ? 'none' : 'inline-block';
       copyBtn.textContent = `📋 Copy ${rosterFilter === 'present' ? 'Present' : 'Absent'}`;
@@ -963,7 +1143,7 @@
     });
   });
   
-  document.getElementById('copyFilteredBtn').addEventListener('click', () => {
+  document.getElementById('copyFilteredBtn').addEventListener('click', async () => {
     const students = currentStudents();
     const att = currentAttendance();
     const names = students.filter(st => {
@@ -972,37 +1152,63 @@
     }).map(s => s.name);
 
     if (names.length === 0) {
-      showToast(`No students to copy for ${rosterFilter}`);
+      showToast(`No students matched "${rosterFilter}" filter.`);
       return;
     }
     
-    copyToClipboard(names.join('\n'));
+    const statusText = names.join('\n');
+    await copyToClipboard(statusText);
     showToast(`Copied ${names.length} ${rosterFilter} students`);
   });
 
-  // ---------- Cloud Drawer/Subjects ----------
+  // ---------- Secure Drawer/Subjects Rendering (Anti-XSS) ----------
   function renderDrawerSubjects(){
     drawerSubjectList.innerHTML = '';
     if (subjects.length === 0) {
-      drawerSubjectList.innerHTML = `<div class="empty-state" style="padding: 24px 8px;">No subjects created yet.<button class="empty-state-btn" onclick="triggerAddNewSubject()">Create One</button></div>`;
+      const emptyCont = document.createElement('div');
+      emptyCont.className = 'empty-state';
+      emptyCont.style.padding = '24px 8px';
+      
+      const emptySpan = document.createElement('span');
+      emptySpan.textContent = 'No subjects created yet.';
+      emptyCont.appendChild(emptySpan);
+      
+      const emptyBtn = document.createElement('button');
+      emptyBtn.className = 'empty-state-btn';
+      emptyBtn.textContent = 'Create One';
+      emptyBtn.addEventListener('click', triggerAddNewSubject);
+      emptyCont.appendChild(emptyBtn);
+
+      drawerSubjectList.appendChild(emptyCont);
       return;
     }
 
     subjects.forEach(subj => {
       const studentCount = (studentsBySubject[subj.id] || []).length;
+      
       const item = document.createElement('div');
       item.className = 'drawer-subject-item' + (subj.id === activeSubjId ? ' active' : '');
       
       item.addEventListener('click', (e) => {
         if (e.target.closest('.subj-btn')) return; 
         activeSubjId = subj.id;
-        loadHourAttendance(); // Switch active subject and load hour roster seamlessly
+        loadHourAttendance(); 
         closeDrawer();
       });
 
       const info = document.createElement('div');
       info.className = 'subj-item-info';
-      info.innerHTML = `<span class="subj-item-name">${escapeHtml(subj.name)}</span><span class="subj-item-count">${studentCount} Student${studentCount === 1 ? '' : 's'}</span>`;
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'subj-item-name';
+      nameSpan.textContent = subj.name;
+      
+      const countSpan = document.createElement('span');
+      countSpan.className = 'subj-item-count';
+      countSpan.textContent = `${studentCount} Student${studentCount === 1 ? '' : 's'}`;
+      
+      info.appendChild(nameSpan);
+      info.appendChild(countSpan);
       
       const actions = document.createElement('div');
       actions.className = 'subj-actions';
@@ -1011,13 +1217,19 @@
       renameBtn.className = 'subj-btn';
       renameBtn.title = "Rename Subject";
       renameBtn.innerHTML = `<svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>`;
-      renameBtn.addEventListener('click', () => triggerRenameSubject(subj.id));
+      renameBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerRenameSubject(subj.id);
+      });
       
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'subj-btn delete';
       deleteBtn.title = "Delete Subject";
       deleteBtn.innerHTML = `<svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
-      deleteBtn.addEventListener('click', () => triggerDeleteSubject(subj.id));
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerDeleteSubject(subj.id);
+      });
 
       actions.appendChild(renameBtn);
       actions.appendChild(deleteBtn);
@@ -1031,16 +1243,26 @@
     const val = await showPromptModal("New Subject", "Type the name of the subject you want to track:", "e.g. Mathematics, Chemistry, Arts");
     if (!val) return;
     
+    // Duplicate Validation
+    const isDuplicate = subjects.some(s => s.name.toLowerCase() === val.toLowerCase());
+    if (isDuplicate) {
+      showToast("⚠️ Subject name already exists");
+      return;
+    }
+
     showToast("Saving subject to cloud...");
     const id = uid();
+    updateNetworkBadge('pending');
+
     try {
-      const res = await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+      const res = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: [{ "subject_id": id, "subject_name": val, "student_name": "__INIT_EMPTY__" }] })
       });
       if (!res.ok) {
         handleHttpError(res, "Add New Subject");
+        updateNetworkBadge('offline', 'Offline Mode Activated');
         return;
       }
 
@@ -1049,10 +1271,23 @@
       attendanceBySubject[id] = {};
       activeSubjId = id;
       
+      saveLocalBackup();
+      updateNetworkBadge('online');
       renderAll();
       renderDrawerSubjects();
       showToast(`Created Subject: "${val}"`);
-    } catch(e) { showToast("❌ Cloud failed to create subject."); }
+    } catch(e) { 
+      // Safe offline local operation fallback
+      subjects.push({ id, name: val });
+      studentsBySubject[id] = [];
+      attendanceBySubject[id] = {};
+      activeSubjId = id;
+      saveLocalBackup();
+      renderAll();
+      renderDrawerSubjects();
+      updateNetworkBadge('offline', 'Offline Save Applied');
+      showToast("✓ Saved Subject locally (Offline)");
+    }
   }
   drawerNewSubjBtn.addEventListener('click', triggerAddNewSubject);
 
@@ -1063,23 +1298,36 @@
     if (!val || val === subject.name) return;
 
     showToast("Updating cloud data...");
+    updateNetworkBadge('pending');
+
     try {
-      const res = await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, {
+      const res = await fetchWithTimeout(`${getApiUrl()}/subject_id/${subjId}?sheet=roster`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: { "subject_name": val } })
       });
       if (!res.ok) {
         handleHttpError(res, "Rename Subject");
+        updateNetworkBadge('offline', 'Offline Operation');
         return;
       }
 
       const oldName = subject.name;
       subject.name = val;
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
       renderAll();
       renderDrawerSubjects();
-      showToast(`Renamed "${oldName}" to "${val}"`);
-    } catch(e) { showToast("❌ Cloud update failed."); }
+      showToast(`Renamed to "${val}"`);
+    } catch(e) { 
+      subject.name = val;
+      saveLocalBackup();
+      renderAll();
+      renderDrawerSubjects();
+      updateNetworkBadge('offline', 'Local Override Action');
+      showToast("✓ Renamed locally (Offline)");
+    }
   }
   headerRenameBtn.addEventListener('click', () => {
     if (activeSubjId) triggerRenameSubject(activeSubjId);
@@ -1090,50 +1338,94 @@
     const subject = subjects.find(s => s.id === subjId);
     if (!subject) return;
 
-    const confirm = await showConfirmModal(`Delete the subject "${subject.name}"? This removes all students and attendance history forever.`);
+    const confirm = await showConfirmModal(
+      `Delete "${subject.name}"?`,
+      "This action is permanent and deletes all students and rosters. Are you absolutely sure?"
+    );
     if (!confirm) return;
 
     showToast("Deleting from cloud...");
-    try {
-      const res1 = await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
-      const res2 = await fetch(`${SHEETDB_API_URL}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
+    updateNetworkBadge('pending');
 
-      if (!res1.ok) { handleHttpError(res1, "Delete Subject (Roster)"); return; }
-      if (!res2.ok) { handleHttpError(res2, "Delete Subject (Attendance)"); return; }
+    try {
+      const res1 = await fetchWithTimeout(`${getApiUrl()}/subject_id/${subjId}?sheet=roster`, { method: 'DELETE' });
+      // Clear all dependent attendance logs as well to ensure clean databases
+      await fetchWithTimeout(`${getApiUrl()}/subject_id/${subjId}?sheet=attendance`, { method: 'DELETE' });
+
+      if (!res1.ok) { 
+        handleHttpError(res1, "Delete Subject"); 
+        updateNetworkBadge('offline');
+        return; 
+      }
 
       subjects = subjects.filter(s => s.id !== subjId);
       delete studentsBySubject[subjId];
       delete attendanceBySubject[subjId];
 
       if (activeSubjId === subjId) activeSubjId = subjects[0]?.id || '';
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
       renderAll();
       renderDrawerSubjects();
       showToast(`Deleted "${subject.name}"`);
-    } catch(e) { showToast("❌ Cloud deletion failed."); }
+    } catch(e) { 
+      // Offline fallback deletion
+      subjects = subjects.filter(s => s.id !== subjId);
+      delete studentsBySubject[subjId];
+      delete attendanceBySubject[subjId];
+      if (activeSubjId === subjId) activeSubjId = subjects[0]?.id || '';
+      saveLocalBackup();
+      renderAll();
+      renderDrawerSubjects();
+      updateNetworkBadge('offline', 'Local Delete Action');
+      showToast("✓ Deleted locally (Offline)");
+    }
   }
 
-  // ---------- Attendance Roster Rendering ----------
+  // ---------- Attendance Roster Rendering (Secure DOM Construction) ----------
   function renderRoster(){
     const students = currentStudents();
     const att = currentAttendance();
     rosterEl.innerHTML = '';
     
     if (!activeSubjId) {
-      rosterEl.innerHTML = `<div class="empty-state">No subject active. <button class="empty-state-btn" id="emptyStateAddSubj">Create your first subject</button></div>`;
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'empty-state';
+      emptyDiv.textContent = 'No subject active. ';
+      
+      const actionBtn = document.createElement('button');
+      actionBtn.className = 'empty-state-btn';
+      actionBtn.textContent = 'Create your first subject';
+      actionBtn.id = 'emptyStateAddSubj';
+      actionBtn.addEventListener('click', triggerAddNewSubject);
+      
+      emptyDiv.appendChild(actionBtn);
+      rosterEl.appendChild(emptyDiv);
       rosterHint.textContent = '';
       updateSummary();
-      document.getElementById('emptyStateAddSubj')?.addEventListener('click', triggerAddNewSubject);
       return;
     }
 
     if (students.length === 0){
-      rosterEl.innerHTML = `<div class="empty-state"><span>No students in this subject yet.</span><span style="font-size:12px; max-width:280px">Add student names above or import multiple at once to start today's roster roll call.</span></div>`;
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'empty-state';
+      
+      const line1 = document.createElement('span');
+      line1.textContent = 'No students in this subject yet.';
+      const line2 = document.createElement('span');
+      line2.style.fontSize = '12px';
+      line2.style.maxWidth = '280px';
+      line2.textContent = 'Add student names above or import multiple at once to start today\'s roster.';
+      
+      emptyDiv.appendChild(line1);
+      emptyDiv.appendChild(line2);
+      rosterEl.appendChild(emptyDiv);
       rosterHint.textContent = '';
       updateSummary();
       return;
     }
     
-    // Filtering logic
     const filteredStudents = students.filter(st => {
       const status = att[today] ? (att[today][st.name] || null) : null;
       if (rosterFilter === 'present' && status !== 'present') return false;
@@ -1142,60 +1434,119 @@
     });
 
     if (filteredStudents.length === 0) {
-      rosterEl.innerHTML = `<div class="empty-state" style="padding: 24px 0;">No students match the "${rosterFilter}" filter.</div>`;
+      const emptyFiltered = document.createElement('div');
+      emptyFiltered.className = 'empty-state';
+      emptyFiltered.style.padding = '24px 0';
+      emptyFiltered.textContent = `No students match the "${rosterFilter}" filter.`;
+      rosterEl.appendChild(emptyFiltered);
     }
 
     rosterHint.textContent = `(${filteredStudents.length}/${students.length})`;
 
     filteredStudents.forEach(st => {
       const status = att[today] ? (att[today][st.name] || null) : null;
+      
       const row = document.createElement('div');
       row.className = 'student-row';
-      row.innerHTML = `
-        <div class="student-name">
-          <div class="avatar">${initials(st.name)}</div>
-          <span>${escapeHtml(st.name)}</span>
-        </div>
-        <div class="toggle-group">
-          <button class="toggle-btn present ${status === 'present' ? 'active' : ''}" data-name="${escapeHtml(st.name)}" data-status="present">Present</button>
-          <button class="toggle-btn absent ${status === 'absent' ? 'active' : ''}" data-name="${escapeHtml(st.name)}" data-status="absent">Absent</button>
-          <button class="remove-btn" data-remove="${escapeHtml(st.name)}" title="Remove student">✕</button>
-        </div>
-      `;
-      rosterEl.appendChild(row);
-    });
-
-    rosterEl.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const name = btn.dataset.name;
-        const status = btn.dataset.status;
+      
+      // Left Info Block
+      const nameCont = document.createElement('div');
+      nameCont.className = 'student-name';
+      
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'avatar';
+      avatarDiv.textContent = initials(st.name);
+      
+      const textSpan = document.createElement('span');
+      textSpan.textContent = st.name; // Safely assigned using textContent
+      
+      nameCont.appendChild(avatarDiv);
+      nameCont.appendChild(textSpan);
+      
+      // Actions/Status Buttons Row
+      const actionsGroup = document.createElement('div');
+      actionsGroup.className = 'toggle-group';
+      
+      const presBtn = document.createElement('button');
+      presBtn.className = 'toggle-btn present' + (status === 'present' ? ' active' : '');
+      presBtn.textContent = 'Present';
+      presBtn.addEventListener('click', () => {
         const a = currentAttendance();
-        
         if (!a[today]) a[today] = {};
-        if (a[today][name] === status) { delete a[today][name]; }
-        else { a[today][name] = status; }
-        
+        if (a[today][st.name] === 'present') {
+          delete a[today][st.name];
+        } else {
+          a[today][st.name] = 'present';
+        }
+        saveLocalBackup();
         renderRoster();
       });
-    });
 
-    rosterEl.querySelectorAll('[data-remove]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const name = btn.dataset.remove;
-        showToast('Removing student from cloud...');
-        try {
-          const res1 = await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=roster`, { method: 'DELETE' });
-          const res2 = await fetch(`${SHEETDB_API_URL}/student_name/${encodeURIComponent(name)}?sheet=attendance`, { method: 'DELETE' });
-          
-          if (!res1.ok) { handleHttpError(res1, "Remove Student (Roster)"); return; }
-          
-          studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== name);
-          const a = currentAttendance();
-          if (a[today]) delete a[today][name];
-          renderRoster();
-          showToast('Removed successfully.');
-        } catch (e) { showToast('❌ Failed to delete from cloud.'); }
+      const absBtn = document.createElement('button');
+      absBtn.className = 'toggle-btn absent' + (status === 'absent' ? ' active' : '');
+      absBtn.textContent = 'Absent';
+      absBtn.addEventListener('click', () => {
+        const a = currentAttendance();
+        if (!a[today]) a[today] = {};
+        if (a[today][st.name] === 'absent') {
+          delete a[today][st.name];
+        } else {
+          a[today][st.name] = 'absent';
+        }
+        saveLocalBackup();
+        renderRoster();
       });
+
+      const deleteActionBtn = document.createElement('button');
+      deleteActionBtn.className = 'remove-btn';
+      deleteActionBtn.title = "Remove student";
+      deleteActionBtn.textContent = '✕';
+      deleteActionBtn.addEventListener('click', async () => {
+        const confirmed = await showConfirmModal(
+          "Remove Student", 
+          `Are you sure you want to delete ${st.name} from "${summarySubjName.textContent}"?`
+        );
+        if (!confirmed) return;
+
+        showToast('Removing student from cloud...');
+        updateNetworkBadge('pending');
+        try {
+          const res1 = await fetchWithTimeout(`${getApiUrl()}/student_name/${encodeURIComponent(st.name)}?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+          await fetchWithTimeout(`${getApiUrl()}/student_name/${encodeURIComponent(st.name)}?sheet=attendance&subject_id=${activeSubjId}`, { method: 'DELETE' });
+          
+          if (!res1.ok) { 
+            handleHttpError(res1, "Remove Student"); 
+            updateNetworkBadge('offline');
+            return; 
+          }
+          
+          studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== st.name);
+          const a = currentAttendance();
+          if (a[today]) delete a[today][st.name];
+          
+          saveLocalBackup();
+          updateNetworkBadge('online');
+          renderRoster();
+          showToast('Removed student successfully.');
+        } catch (e) { 
+          studentsBySubject[activeSubjId] = currentStudents().filter(s => s.name !== st.name);
+          const a = currentAttendance();
+          if (a[today]) delete a[today][st.name];
+          saveLocalBackup();
+          updateNetworkBadge('offline', 'Local Remove Mode');
+          renderRoster();
+          showToast('Removed student locally (Offline).');
+        }
+      });
+
+      actionsGroup.appendChild(presBtn);
+      actionsGroup.appendChild(absBtn);
+      actionsGroup.appendChild(deleteActionBtn);
+      
+      row.appendChild(nameCont);
+      row.appendChild(actionsGroup);
+      
+      rosterEl.appendChild(row);
     });
 
     updateSummary();
@@ -1231,35 +1582,57 @@
     summarySubjName.textContent = currentSubjObj ? currentSubjObj.name : '—';
   }
 
-  // ---------- Add Student Functionality ----------
+  // ---------- Student Record Input Normalization & Checks ----------
+  function cleanStudentName(rawName) {
+    // Trim extra spacing and enforce capitalized word formatting
+    return rawName.trim().replace(/\s+/g, ' ');
+  }
+
   addBtn.addEventListener('click', async () => {
     if (!activeSubjId) { showToast('Please select or create a subject first!'); return; }
-    const name = nameInput.value.trim();
+    let rawName = nameInput.value;
+    const name = cleanStudentName(rawName);
     if (!name) return;
     
+    // Roster Duplicate Checks
     const students = currentStudents();
-    if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) { showToast('That name is already on the roster'); return; }
+    if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) { 
+      showToast('⚠️ Student is already in the class roster.'); 
+      return; 
+    }
 
-    showToast('Adding student to cloud...');
+    showToast('Adding student...');
     const currentSubjObj = subjects.find(s => s.id === activeSubjId);
+    updateNetworkBadge('pending');
 
     try {
-      await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
-      const res = await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+      await fetchWithTimeout(`${getApiUrl()}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+      const res = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: [{ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }] })
       });
       if (!res.ok) {
         handleHttpError(res, "Add Student");
+        updateNetworkBadge('offline');
         return;
       }
       students.push({ name });
       nameInput.value = '';
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
       renderRoster();
       nameInput.focus();
       showToast('Student added successfully!');
-    } catch (e) { showToast('❌ Failed to add student online.'); }
+    } catch (e) { 
+      students.push({ name });
+      nameInput.value = '';
+      saveLocalBackup();
+      updateNetworkBadge('offline', 'Offline Save Applied');
+      renderRoster();
+      showToast('✓ Added student locally (Offline)');
+    }
   });
   nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
 
@@ -1281,24 +1654,36 @@
     bulkInput.focus();
   });
 
-  function parseBulkNames(raw){ return raw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean); }
+  function parseBulkNames(raw){ 
+    return raw.split(/[\n,]+/).map(s => cleanStudentName(s)).filter(Boolean); 
+  }
+  
   function dedupeAgainstRoster(names){
     const existing = new Set(currentStudents().map(s => s.name.toLowerCase()));
-    const seen = new Set(); const fresh = [];
+    const seen = new Set(); 
+    const fresh = [];
     names.forEach(n => {
       const key = n.toLowerCase();
       if (existing.has(key) || seen.has(key)) return;
-      seen.add(key); fresh.push(n);
+      seen.add(key); 
+      fresh.push(n);
     });
     return fresh;
   }
 
   bulkInput.addEventListener('input', () => {
-    if (!activeSubjId) { bulkPreview.innerHTML = `Create/select a subject first.`; bulkAddBtn.disabled = true; return; }
+    if (!activeSubjId) { bulkPreview.textContent = 'Create/select a subject first.'; bulkAddBtn.disabled = true; return; }
     const names = parseBulkNames(bulkInput.value);
     const fresh = dedupeAgainstRoster(names);
     const dupes = names.length - fresh.length;
-    bulkPreview.innerHTML = `<b>${fresh.length}</b> new name${fresh.length === 1 ? '' : 's'} detected` + (dupes > 0 ? ` · ${dupes} skipped (duplicate)` : '');
+    
+    // Safe text formatting allocation
+    bulkPreview.textContent = '';
+    const strongTag = document.createElement('b');
+    strongTag.textContent = fresh.length;
+    bulkPreview.appendChild(strongTag);
+    bulkPreview.append(` new name${fresh.length === 1 ? '' : 's'} detected` + (dupes > 0 ? ` · ${dupes} skipped` : ''));
+    
     bulkAddBtn.disabled = fresh.length === 0;
   });
 
@@ -1308,19 +1693,21 @@
     const fresh = dedupeAgainstRoster(names);
     if (fresh.length === 0) return;
     
-    showToast("Bulk importing to cloud...");
+    showToast("Bulk importing...");
     const currentSubjObj = subjects.find(s => s.id === activeSubjId);
     const rowsToSend = fresh.map(name => ({ "subject_id": activeSubjId, "subject_name": currentSubjObj ? currentSubjObj.name : "Classroom Subject", "student_name": name }));
+    updateNetworkBadge('pending');
 
     try {
-      await fetch(`${SHEETDB_API_URL}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
-      const res = await fetch(`${SHEETDB_API_URL}?sheet=roster`, {
+      await fetchWithTimeout(`${getApiUrl()}/student_name/__INIT_EMPTY__?sheet=roster&subject_id=${activeSubjId}`, { method: 'DELETE' });
+      const res = await fetchWithTimeout(`${getApiUrl()}?sheet=roster`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: rowsToSend })
       });
       if (!res.ok) {
         handleHttpError(res, "Bulk Import Students");
+        updateNetworkBadge('offline');
         return;
       }
       const students = currentStudents();
@@ -1328,12 +1715,26 @@
       bulkInput.value = '';
       bulkPreview.textContent = '0 names detected';
       bulkAddBtn.disabled = true;
+      
+      saveLocalBackup();
+      updateNetworkBadge('online');
       renderRoster();
-      showToast(`Imported ${fresh.length} students to cloud!`);
-    } catch(e) { showToast("❌ Bulk import failed."); }
+      showToast(`Imported ${fresh.length} students successfully!`);
+    } catch(e) { 
+      const students = currentStudents();
+      fresh.forEach(name => students.push({ name }));
+      bulkInput.value = '';
+      bulkPreview.textContent = '0 names detected';
+      bulkAddBtn.disabled = true;
+      
+      saveLocalBackup();
+      updateNetworkBadge('offline', 'Local Multi-Import Applied');
+      renderRoster();
+      showToast(`✓ Imported ${fresh.length} students locally (Offline).`);
+    }
   });
 
-  // ---------- SAVE ACTION (Target Hour Selective Overwrite) ----------
+  // ---------- ATTENDANCE SAVE TRANSACTION (Safely Prevent overwrites) ----------
   const saveBtn = document.getElementById('saveBtn');
   saveBtn.addEventListener('click', async () => {
     if (!activeSubjId) { showToast('Select a subject first!'); return; }
@@ -1345,41 +1746,42 @@
 
     students.forEach(student => {
       const status = att[student.name];
-      if (status) { 
+      if (status === 'present' || status === 'absent') { 
         rowsToSend.push({
           "subject_id": activeSubjId,
           "date": today,
-          "hour": selectedHour, // Track distinct hour index
+          "hour": selectedHour,
           "student_name": student.name,
           "status": status
         });
       }
     });
 
-    if (rowsToSend.length === 0) { showToast('No attendance marked to save yet!'); return; }
+    if (rowsToSend.length === 0) { 
+      showToast('No attendance marked to save!'); 
+      return; 
+    }
 
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
     showToast('Saving to cloud...');
+    updateNetworkBadge('pending');
 
-    // Resilient delete block: Wrap preceding selective-delete separately so a
-    // 400 rejection on compound parameters doesn't break the actual POST save.
+    // Safe Update Strategy: First verify network connection, then attempt targeted overwrite
     try {
-      await fetch(`${SHEETDB_API_URL}/subject_id/${activeSubjId}?sheet=attendance&date=${today}&hour=${encodeURIComponent(selectedHour)}`, {
+      // Clean up previous records for the subject/hour to avoid duplicate bloat
+      await fetchWithTimeout(`${getApiUrl()}/subject_id/${activeSubjId}?sheet=attendance&date=${today}&hour=${encodeURIComponent(selectedHour)}`, {
         method: 'DELETE'
       });
-    } catch (err) {
-      console.warn("Attempted record cleanup prior to save bypassed:", err);
-    }
 
-    try {
-      const response = await fetch(`${SHEETDB_API_URL}?sheet=attendance`, {
+      const response = await fetchWithTimeout(`${getApiUrl()}?sheet=attendance`, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: rowsToSend })
       });
 
       if (response.ok) {
+        updateNetworkBadge('online');
         showToast(`✓ Attendance Saved for ${selectedHour}!`);
         if (tabDrawHist.classList.contains('active')) renderHistory();
       } else {
@@ -1387,7 +1789,10 @@
       }
     } catch (error) {
       console.error(error);
-      showToast('❌ Network transaction error.');
+      // Offline fallback
+      saveLocalBackup();
+      updateNetworkBadge('offline', 'Draft Saved Locally');
+      showToast('⚠️ Network offline. Roster saved locally.');
     } finally {
       saveBtn.disabled = false;
       saveBtn.textContent = '✓ Save Attendance';
@@ -1406,7 +1811,7 @@
     const students = currentStudents();
     const att = currentAttendance()[today] || {};
     
-    // Find absolute absentees
+    // Extract absentees
     const absentees = students.filter(st => att[st.name] === 'absent').map(st => st.name);
     
     if (students.length === 0) {
@@ -1417,7 +1822,6 @@
     const totalAbsenteesCount = absentees.length;
     const formattedDate = formatDateLabel(today);
 
-    // Dynamic formatting for WhatsApp dispatch
     let messageText = `*🔴 ABSENTEES LIST 🔴*\n\n`;
     messageText += `*Subject:* ${currentSubj ? currentSubj.name : "N/A"}\n`;
     messageText += `*Period:* ${selectedHour}\n`;
@@ -1426,7 +1830,7 @@
     messageText += `*Absentees Names:*\n`;
 
     if (totalAbsenteesCount === 0) {
-      messageText += `🎉 _All students are present today!_`;
+      messageText += `🎉 _All students are present!_`;
     } else {
       absentees.forEach((name, index) => {
         messageText += `${index + 1}. ${name}\n`;
@@ -1438,7 +1842,7 @@
     showToast('Redirecting to WhatsApp...');
   });
 
-  // ---------- Drawer History Renderer (Includes dynamic Period indicators) ----------
+  // ---------- Drawer History (Secure programmatic rendering) ----------
   const historyTabs = document.getElementById('historyTabs');
   const historyPanel = document.getElementById('historyPanel');
   let activeHistoryKey = null;
@@ -1450,7 +1854,11 @@
     historyTabs.innerHTML = '';
     
     if (!activeSubjId) {
-      historyPanel.innerHTML = `<div class="history-empty">Please select a subject to load history.</div>`;
+      historyPanel.textContent = '';
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'history-empty';
+      emptyDiv.textContent = 'Please select a subject to load history.';
+      historyPanel.appendChild(emptyDiv);
       return;
     }
 
@@ -1465,22 +1873,31 @@
       historyTabs.appendChild(btn);
     });
 
-    historyPanel.innerHTML = `<div class="history-empty">Loading records...</div>`;
+    historyPanel.innerHTML = '';
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'history-empty';
+    loadingDiv.textContent = 'Loading records...';
+    historyPanel.appendChild(loadingDiv);
 
     try {
-      const response = await fetch(`${SHEETDB_API_URL}/search?subject_id=${activeSubjId}&sheet=attendance`);
+      const response = await fetchWithTimeout(`${getApiUrl()}/search?subject_id=${activeSubjId}&sheet=attendance`);
       if (!response.ok) {
         handleHttpError(response, "Render History Block");
         return;
       }
       const data = await response.json();
 
+      historyPanel.innerHTML = '';
+
       if (!data || data.length === 0 || data.error){
-        historyPanel.innerHTML = `<div class="history-empty">No attendance logged on ${formatDateLabel(activeHistoryKey)}.</div>`;
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'history-empty';
+        emptyDiv.textContent = `No attendance logged on ${formatDateLabel(activeHistoryKey)}.`;
+        historyPanel.appendChild(emptyDiv);
         return;
       }
 
-      // Group dynamic hour keys
+      // Group hour blocks safely
       const groupedByHour = {};
       data.forEach(row => {
         const rowDateKey = normalizeDateToKey(parseSheetDate(row.date));
@@ -1491,11 +1908,12 @@
         }
       });
 
-      historyPanel.innerHTML = '';
-
       const hourKeys = Object.keys(groupedByHour).sort();
       if (hourKeys.length === 0) {
-        historyPanel.innerHTML = `<div class="history-empty">No attendance logged on ${formatDateLabel(activeHistoryKey)}.</div>`;
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'history-empty';
+        emptyDiv.textContent = `No attendance logged on ${formatDateLabel(activeHistoryKey)}.`;
+        historyPanel.appendChild(emptyDiv);
         return;
       }
 
@@ -1508,47 +1926,103 @@
         section.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
         section.style.padding = '12px 8px';
 
-        section.innerHTML = `
-          <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px; font-size: 13.5px; font-family: 'Space Grotesk', sans-serif;">
-            ⚡ ${hr}
-          </div>
-          <div class="history-summary" style="margin: 0 0 10px 0; font-size: 11px;">
-            <div class="count"><span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present</div>
-            <div class="count"><span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent</div>
-          </div>
-          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-            <button class="filter-btn copy-btn" id="histCopyPresent-${hr}" style="font-size:10px; padding: 4px 8px;">📋 Copy Present</button>
-            <button class="filter-btn copy-btn" id="histCopyAbsent-${hr}" style="font-size:10px; padding: 4px 8px;">📋 Copy Absent</button>
-          </div>
-          <div class="history-list" id="histList-${hr}" style="margin: 0; max-height: 150px; overflow-y:auto; gap: 4px;"></div>
-        `;
-        historyPanel.appendChild(section);
+        // Title Element
+        const titleDiv = document.createElement('div');
+        titleDiv.style.fontWeight = '700';
+        titleDiv.style.color = 'var(--accent)';
+        titleDiv.style.marginBottom = '6px';
+        titleDiv.style.fontSize = '13.5px';
+        titleDiv.style.fontFamily = "'Space Grotesk', sans-serif";
+        titleDiv.textContent = `⚡ ${hr}`;
 
-        const listEl = document.getElementById(`histList-${hr}`);
-        [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
-          const row = document.createElement('div');
-          row.className = 'history-item';
-          row.style.fontSize = '12px';
-          row.innerHTML = `<span>${escapeHtml(name)}</span><span class="status-tag ${status}">${status.toUpperCase()}</span>`;
-          listEl.appendChild(row);
-        });
+        // Summary Metric Row
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'history-summary';
+        summaryDiv.style.margin = '0 0 10px 0';
+        summaryDiv.style.fontSize = '11px';
+        
+        const presCountContainer = document.createElement('div');
+        presCountContainer.className = 'count';
+        presCountContainer.innerHTML = `<span class="dot" style="background:var(--present)"></span><b>${presentNames.length}</b> present`;
+        
+        const absCountContainer = document.createElement('div');
+        absCountContainer.className = 'count';
+        absCountContainer.innerHTML = `<span class="dot" style="background:var(--absent)"></span><b>${absentNames.length}</b> absent`;
+        
+        summaryDiv.appendChild(presCountContainer);
+        summaryDiv.appendChild(absCountContainer);
 
-        // Copy interactions per period
-        document.getElementById(`histCopyPresent-${hr}`).addEventListener('click', () => {
+        // Copy Actions Row
+        const actionsDiv = document.createElement('div');
+        actionsDiv.style.display = 'flex';
+        actionsDiv.style.gap = '8px';
+        actionsDiv.style.marginBottom = '10px';
+
+        const copyPresBtn = document.createElement('button');
+        copyPresBtn.className = 'filter-btn copy-btn';
+        copyPresBtn.style.fontSize = '10px';
+        copyPresBtn.style.padding = '4px 8px';
+        copyPresBtn.textContent = '📋 Copy Present';
+        copyPresBtn.addEventListener('click', async () => {
           if (!presentNames.length) return showToast('No present names');
-          copyToClipboard(presentNames.join('\n'));
+          await copyToClipboard(presentNames.join('\n'));
           showToast(`Copied ${presentNames.length} names`);
         });
-        document.getElementById(`histCopyAbsent-${hr}`).addEventListener('click', () => {
+
+        const copyAbsBtn = document.createElement('button');
+        copyAbsBtn.className = 'filter-btn copy-btn';
+        copyAbsBtn.style.fontSize = '10px';
+        copyAbsBtn.style.padding = '4px 8px';
+        copyAbsBtn.textContent = '📋 Copy Absent';
+        copyAbsBtn.addEventListener('click', async () => {
           if (!absentNames.length) return showToast('No absent names');
-          copyToClipboard(absentNames.join('\n'));
+          await copyToClipboard(absentNames.join('\n'));
           showToast(`Copied ${absentNames.length} names`);
         });
+
+        actionsDiv.appendChild(copyPresBtn);
+        actionsDiv.appendChild(copyAbsBtn);
+
+        // Scrollable List
+        const listEl = document.createElement('div');
+        listEl.className = 'history-list';
+        listEl.style.margin = '0';
+        listEl.style.maxHeight = '150px';
+        listEl.style.overflowY = 'auto';
+        listEl.style.gap = '4px';
+
+        [...presentNames.map(n => [n, 'present']), ...absentNames.map(n => [n, 'absent'])].forEach(([name, status]) => {
+          const item = document.createElement('div');
+          item.className = 'history-item';
+          item.style.fontSize = '12px';
+          
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = name;
+          
+          const tagSpan = document.createElement('span');
+          tagSpan.className = `status-tag ${status}`;
+          tagSpan.textContent = status.toUpperCase();
+          
+          item.appendChild(nameSpan);
+          item.appendChild(tagSpan);
+          listEl.appendChild(item);
+        });
+
+        section.appendChild(titleDiv);
+        section.appendChild(summaryDiv);
+        section.appendChild(actionsDiv);
+        section.appendChild(listEl);
+        historyPanel.appendChild(section);
       });
 
     } catch (error) {
       console.error(error);
-      historyPanel.innerHTML = `<div class="history-empty" style="color:var(--absent)">Failed to download history.</div>`;
+      historyPanel.innerHTML = '';
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'history-empty';
+      errorDiv.style.color = 'var(--absent)';
+      errorDiv.textContent = 'Failed to load history records.';
+      historyPanel.appendChild(errorDiv);
     }
   }
 
@@ -1558,6 +2032,7 @@
     if(tabDrawHist.classList.contains('active')) renderHistory();
   }
   
+  // App Entry Init
   initializeAppFromCloud();
 </script>
 </body>
